@@ -3,8 +3,8 @@ import ProblemList from "@/custom-components/ProblemList";
 
 export default function Home() {
   return (
-    <div className="w-full">
-      <NavBar/>
+    <div className="w-full pt-20">
+      
       <ProblemList/>
     </div>
   );

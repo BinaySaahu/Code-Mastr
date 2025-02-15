@@ -19,25 +19,30 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import Link from "next/link";
 
 const ProblemList = () => {
   const problemList = [
     {
       problemName: "Two Sum",
       difficulty: "Easy",
+      id: 1,
       topic: ["Array"],
     },
     {
       problemName: "Three Sum",
       difficulty: "Medium",
+      id: 2,
       topic: ["Array", "HashMap"],
     },
     {
       problemName: "Four Sum",
       difficulty: "Hard",
+      id: 3,
       topic: ["Array", "Sum", "HashMap"],
     },
   ];
+  let pages = Math.ceil(problemList.length / 10);
   return (
     <div>
       <Table>
@@ -63,36 +68,42 @@ const ProblemList = () => {
                   </Badge>
                 </TableCell>
                 <TableCell>
-                  {problem.topic.map((t, idx) => {
-                    return (
-                      <Badge variant="outline">{t}</Badge>
-                    );
-                  })}
+                  <div className="flex items-center flex-wrap gap-2">
+                    {problem.topic.map((t, idx) => {
+                      return <Badge variant="outline">{t}</Badge>;
+                    })}
+                  </div>
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button>Solve</Button>
+                  <Link href={`/problem/${problem.id}`}>
+                    <Button>Solve</Button>
+                  </Link>
                 </TableCell>
               </TableRow>
             );
           })}
         </TableBody>
       </Table>
-      <Pagination>
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious href="#" />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#">1</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext href="#" />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+
+      <div className="mt-5">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious href="#" />
+            </PaginationItem>
+            {[...Array(pages)].map((element, idx) => {
+              return (
+                <PaginationItem className="border rounded">
+                  <PaginationLink href="#">{idx + 1}</PaginationLink>
+                </PaginationItem>
+              )
+            })}
+            <PaginationItem>
+              <PaginationNext href="#" />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      </div>
     </div>
   );
 };
