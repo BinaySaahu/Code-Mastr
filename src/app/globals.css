@@ -5,6 +5,15 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+*{
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
 
 @layer base {
   :root {
@@ -35,7 +44,7 @@ body {
     --radius: 0.5rem;
   }
   .dark {
-    --background: 0 0% 3.9%;
+    --background: 0 0% 8.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;

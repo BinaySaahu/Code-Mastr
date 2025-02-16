@@ -59,7 +59,7 @@ const ProblemList = () => {
         <TableBody>
           {problemList.map((problem, idx) => {
             return (
-              <TableRow>
+              <TableRow key={idx}>
                 <TableCell className="font-medium">{idx + 1}</TableCell>
                 <TableCell>{problem.problemName}</TableCell>
                 <TableCell>
@@ -69,8 +69,8 @@ const ProblemList = () => {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center flex-wrap gap-2">
-                    {problem.topic.map((t, idx) => {
-                      return <Badge variant="outline">{t}</Badge>;
+                    {problem.topic.map((t, index) => {
+                      return <Badge variant="outline" key={index}>{t}</Badge>;
                     })}
                   </div>
                 </TableCell>
@@ -93,7 +93,7 @@ const ProblemList = () => {
             </PaginationItem>
             {[...Array(pages)].map((element, idx) => {
               return (
-                <PaginationItem className="border rounded">
+                <PaginationItem className="border rounded" key={idx}>
                   <PaginationLink href="#">{idx + 1}</PaginationLink>
                 </PaginationItem>
               )
