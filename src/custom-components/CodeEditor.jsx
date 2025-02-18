@@ -24,13 +24,13 @@ const CodeEditor = () => {
   return (
     <div className="border-[#fff]/[50%] border rounded-md p-3">
       <div className="flex justify-between items-center">
-      <Select defaultValue="javascript" onValueChange={(value)=>handleLanguage(value)}>
+      <Select defaultValue={language} onValueChange={(value)=>handleLanguage(value)}>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select language" />
+          <SelectValue placeholder={`${LANGUAGE_VERSIONS[language].name}&nbsp;(${LANGUAGE_VERSIONS[language].version})`} />
         </SelectTrigger>
         <SelectContent>
           {ALL_LANGUAGES.map((language,idx) => (
-            <SelectItem value={language} key={idx}>{language}</SelectItem>
+            <SelectItem value={language} key={idx}>{LANGUAGE_VERSIONS[language].name}&nbsp;({LANGUAGE_VERSIONS[language].version})</SelectItem>
           ))}
         </SelectContent>
       </Select>
