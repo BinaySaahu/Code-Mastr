@@ -1,4 +1,5 @@
-"use client"
+"use client";
+import { addUser } from "@/app/data-store/slices/userSlice";
 import { Button } from "@/components/ui/button";
 import {
   Disclosure,
@@ -9,10 +10,9 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/react";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
-import { CiLight } from "react-icons/ci";
-import { MdLightMode } from "react-icons/md";
+import { useDispatch } from "react-redux";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
@@ -26,10 +26,33 @@ function classNames(...classes) {
 }
 
 export default function NavBar() {
-  const [path, setPath] = useState('/');
-  useEffect(()=>{
-    setPath(window.location.pathname)
-  },[])
+  const [path, setPath] = useState("/");
+  const [userData, setUserData] = useState(null);
+  const dispatch = useDispatch();
+  const loadUser = async () => {
+    try {
+      const response = await fetch("/api/getUser");
+      if (!response.ok) {
+        throw new Error("Response status", response.status);
+      }
+      const json = await response.json();
+      dispatch(addUser(json[0]));
+      setUserData(json[0]);
+    } catch (error) {
+      console.log(error);
+      setUserData(userData);
+    }
+  };
+  useEffect(() => {
+    let data = localStorage.getItem("user");
+    if (data) {
+      setUserData(JSON.parse(data));
+      dispatch(addUser(JSON.parse(data)));
+    } else {
+      loadUser();
+    }
+    setPath(window.location.pathname);
+  }, []);
   return (
     <Disclosure
       as="nav"
