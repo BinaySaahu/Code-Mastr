@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/pagination";
 import Link from "next/link";
 import { useSelector } from "react-redux";
+import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
+
 
 const ProblemList = () => {
   const [problemList, setProblemList] = useState([]);
@@ -75,7 +77,7 @@ const ProblemList = () => {
         <TableHeader>
           <TableRow>
             <TableHead className="w-[100px]">Sl.No</TableHead>
-            <TableHead className="w-[20px]">Staus</TableHead>
+            <TableHead className="w-[50px]">Status</TableHead>
             <TableHead>Problem</TableHead>
             <TableHead>Difficulty</TableHead>
             <TableHead>Topics</TableHead>
@@ -89,7 +91,12 @@ const ProblemList = () => {
                 <TableCell className="font-medium">{problem.id}</TableCell>
                 <TableCell className="font-medium">
                   {
-                    
+                    // USER.solved?.length
+
+                    USER.solved?.map((solved,idx)=>{
+                      if(solved.id === problem.id) return <IoCheckmarkDoneCircleOutline key={idx} color="green" size={25}/>
+
+                    })
                   }
                 </TableCell>
                 <TableCell>{problem.name}</TableCell>

@@ -31,13 +31,14 @@ export default function NavBar() {
   const dispatch = useDispatch();
   const loadUser = async () => {
     try {
-      const response = await fetch("/api/getUser");
+      const response = await fetch(`/api/getUser/?id=${1}`);
       if (!response.ok) {
         throw new Error("Response status", response.status);
       }
       const json = await response.json();
-      dispatch(addUser(json[0]));
-      setUserData(json[0]);
+      console.log("User response->", json)
+      dispatch(addUser(json));
+      setUserData(json);
     } catch (error) {
       console.log(error);
       setUserData(userData);
@@ -45,7 +46,7 @@ export default function NavBar() {
   };
   useEffect(() => {
     let data = localStorage.getItem("user");
-    if (data) {
+    if (data !== undefined && data != null) {
       setUserData(JSON.parse(data));
       dispatch(addUser(JSON.parse(data)));
     } else {
