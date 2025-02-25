@@ -11,8 +11,10 @@ import {
   MenuItems,
 } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { getSession, signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+
 
 const navigation = [
   { name: "Home", href: "/", current: true },
@@ -27,6 +29,8 @@ function classNames(...classes) {
 
 export default function NavBar() {
   const [path, setPath] = useState("/");
+  const {status} = useSession()
+  
   const [userData, setUserData] = useState(null);
   const dispatch = useDispatch();
   const loadUser = async () => {
@@ -44,13 +48,19 @@ export default function NavBar() {
       setUserData(userData);
     }
   };
+
+  const getData = async()=>{
+    const session = await getSession()
+    console.log(session)
+  }
   useEffect(() => {
-    let data = localStorage.getItem("user");
-    if (data !== undefined && data != null) {
-      setUserData(JSON.parse(data));
-      dispatch(addUser(JSON.parse(data)));
+    getData()
+    let user = localStorage.getItem("user");
+    if (user !== undefined && user != null) {
+      setUserData(JSON.parse(user));
+      dispatch(addUser(JSON.parse(user)));
     } else {
-      loadUser();
+      // loadUser();
     }
     setPath(window.location.pathname);
   }, []);
@@ -105,10 +115,13 @@ export default function NavBar() {
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            <Button variant="default">Contribute</Button>
+            <Button variant="default" onClick = {()=>signOut()}>Contribute</Button>
+            {
+
+            }
 
             {/* Profile dropdown */}
-            <Menu as="div" className="relative ml-3">
+            {/* <Menu as="div" className="relative ml-3">
               <div>
                 <MenuButton className="relative flex rounded-full bg-[#343333] text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                   <span className="absolute -inset-1.5" />
@@ -149,7 +162,7 @@ export default function NavBar() {
                   </a>
                 </MenuItem>
               </MenuItems>
-            </Menu>
+            </Menu> */}
           </div>
         </div>
       </div>

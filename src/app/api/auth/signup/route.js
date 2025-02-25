@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { generateClient } from "@/server/db";
 import { cookies } from "next/headers";
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 export async function POST(request) {
   const { email, name, password } = await request.json();
   const prisma = await generateClient();
@@ -32,9 +33,10 @@ export async function POST(request) {
         data: userData,
       });
       if (createdUser) {
+        const token = jwt.sign({ id: createdUser.email }, process.env.SECRET_KEY)
         const session = cookie.set({
           name: "auth",
-          value: sessionData,
+          value: token,
           expires: Date.now() + 60 * 60 * 24,
           secure: true,
         });

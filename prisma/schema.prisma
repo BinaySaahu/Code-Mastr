@@ -14,20 +14,20 @@ datasource db {
 }
 
 model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  name    String? 
+  id       String    @id @default(uuid())
+  email    String    @unique
+  name     String?
   password String
-  solved Problem[]
-  admin Boolean @default(false)
+  solved   Problem[]
+  admin    Boolean   @default(false)
 }
 
-model Problem{
-  id Int @id @default(autoincrement())
-  name String
+model Problem {
+  id          Int      @id @default(autoincrement())
+  name        String
   description String
-  difficulty String
-  topics String[]
+  difficulty  String
+  topics      String[]
 
   User User[]
 }
