@@ -14,7 +14,19 @@ body {
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 }
+input{
+  background-color: transparent !important;
+}
 
+input:focus, input:active {
+  background: transparent;
+}
+input:-internal-autofill-selected {
+  appearance: menulist-button;
+  background-image: none !important;
+  background-color: transparent !important;
+  color: fieldtext !important;
+}
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -79,7 +91,10 @@ body {
     @apply bg-background text-foreground;
   }
 }
-
+p{
+  margin: 0;
+  padding: 0;
+}
 
 
 @layer base {

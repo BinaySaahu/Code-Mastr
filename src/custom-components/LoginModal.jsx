@@ -21,7 +21,7 @@ import { signIn } from "next-auth/react";
 const LoginModal = () => {
   return (
     <div className="h-screen w-full flex items-center justify-center">
-      <Card className = "px-4">
+      <Card className = "px-4 w-[23%]">
         <CardHeader>
           <CardTitle>Login</CardTitle>
           <CardDescription>Please login using your email and password</CardDescription>

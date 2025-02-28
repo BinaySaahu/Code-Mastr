@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { generateClient } from "@/server/db";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 export async function POST(request) {
@@ -29,7 +30,7 @@ export async function POST(request) {
       const sessionData = JSON.stringify(userData);
 
       const cookie = await cookies();
-      const createdUser = await prisma.user.create({
+      let createdUser = await prisma.user.create({
         data: userData,
       });
       if (createdUser) {
@@ -40,6 +41,10 @@ export async function POST(request) {
           expires: Date.now() + 60 * 60 * 24,
           secure: true,
         });
+        const solved = await prisma.user.findUnique({
+          where:{id: createdUser.id}
+        }).solved();
+        createdUser = {...createdUser, solved:solved}
         console.log("Created user->", createdUser);
         console.log("Cookie->", session);
         return NextResponse.json({
@@ -47,6 +52,7 @@ export async function POST(request) {
           text: "User created successfully",
           user: createdUser,
         });
+        
       } else {
         return NextResponse.json({
           status: 500,
