@@ -11,11 +11,11 @@ export const userSlice = createSlice({
   },
   reducers: {
     addUser: (state,action) => {
-      state.userId = action.payload?.id
-      state.name = action.payload?.name;
-      state.email = action.payload?.email;
-      state.solved = action.payload?.solved;
-      state.admin = action.payload?.admin;
+      state.userId = action.payload.id
+      state.name = action.payload.name;
+      state.email = action.payload.email;
+      state.solved = action.payload.solved;
+      state.admin = action.payload.admin;
       localStorage.setItem("user",JSON.stringify(action.payload));
     },
     setToken:(state,action)=>{

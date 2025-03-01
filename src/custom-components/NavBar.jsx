@@ -31,7 +31,7 @@ export default function NavBar() {
   const [path, setPath] = useState("/");
   const { status } = useSession();
 
-  const USER = useSelector((user) => user.state);
+  const USER = useSelector((state) => state.user);
 
   const [userData, setUserData] = useState(null);
   const dispatch = useDispatch();
@@ -62,14 +62,14 @@ export default function NavBar() {
   useEffect(() => {
     getData();
     let user = localStorage.getItem("user");
-    if (user !== undefined || user != null) {
+    if (user !== undefined && user != null) {
       setUserData(JSON.parse(user));
       dispatch(addUser(JSON.parse(user)));
     } else {
       // loadUser();
     }
     setPath(window.location.pathname);
-  }, []);
+  }, [window.location.pathname]);
   return (
     <Disclosure
       as="nav"
@@ -124,7 +124,7 @@ export default function NavBar() {
             <Button variant="default" onClick={() => signOut()}>
               Contribute
             </Button>
-            {userData ? (
+            {USER.email ? (
               <Menu as="div" className="relative ml-3">
                 <div>
                   <MenuButton className="relative flex rounded-full bg-[#343333] text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">

@@ -16,7 +16,6 @@ import { FaFacebook, FaGithub, FaGoogle } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { addUser } from "@/app/data-store/slices/userSlice";
-import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
 
 const SignupModal = () => {
@@ -27,6 +26,7 @@ const SignupModal = () => {
   } = useForm();
   const dispatch = useDispatch()
   const {push} = useRouter()
+  const [error, setError] = useState("")
 
   const submit = async (userData) => {
     console.log("User data->", userData);
@@ -40,14 +40,16 @@ const SignupModal = () => {
         },
         body: JSON.stringify(userData)
       });
-      if (!res.ok) {
-        throw new Error("message", res.statusText);
-      }
       const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.text);
+      }
+      
       dispatch(addUser(data.user))
       push('/')
       console.log(data);
     } catch (error) {
+      setError(error.message);
       console.log(error);
     }
   };
@@ -117,6 +119,11 @@ const SignupModal = () => {
             <Button className="w-full" type="submit">
               Register
             </Button>
+            {error && (
+              <p className="text-red-600 w-full text-center mt-1 text-xs">
+                {error}
+              </p>
+            )}
             <p className="text-xs">
               Already have an account?{" "}
               <Link href={"/accounts/login"} className="text-blue-600">
