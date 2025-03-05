@@ -15,7 +15,7 @@ import React, { useState } from "react";
 import { FaFacebook, FaGithub, FaGoogle } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { addUser } from "@/app/data-store/slices/userSlice";
+import { addUser, setToken } from "@/app/data-store/slices/userSlice";
 import { useRouter } from "next/navigation";
 
 const SignupModal = () => {
@@ -46,6 +46,7 @@ const SignupModal = () => {
       }
       
       dispatch(addUser(data.user))
+      dispatch(setToken(data.token))
       push('/')
       console.log(data);
     } catch (error) {

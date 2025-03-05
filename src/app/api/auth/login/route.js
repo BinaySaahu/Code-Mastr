@@ -20,7 +20,9 @@ export async function POST(request) {
         const checkedPassword = await bcrypt.compare(password, user.password);
         if (checkedPassword) {
           const cookie = await cookies();
-          const token = jwt.sign({ id: user.email }, process.env.SECRET_KEY);
+          const token = jwt.sign({ id: user.email }, process.env.SECRET_KEY,{
+            expiresIn: '5h'
+          });
           const session = cookie.set({
             name: "auth",
             value: token,
@@ -36,6 +38,7 @@ export async function POST(request) {
           return NextResponse.json({
             text: "User Logged in successfully",
             user: user,
+            token: token
           });
         } else {
           return NextResponse.json(

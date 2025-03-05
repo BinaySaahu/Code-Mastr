@@ -1,4 +1,5 @@
 "use client";
+
 import "./globals.css";
 import NavBar from "@/custom-components/NavBar";
 import { Provider } from "react-redux";

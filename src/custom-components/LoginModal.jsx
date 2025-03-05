@@ -18,7 +18,7 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { addUser } from "@/app/data-store/slices/userSlice";
+import { addUser, setToken } from "@/app/data-store/slices/userSlice";
 import { useRouter } from "next/navigation";
 
 const LoginModal = () => {
@@ -47,6 +47,7 @@ const LoginModal = () => {
       }
       
       dispatch(addUser(json.user));
+      dispatch(setToken(json.token));
       push("/");
     } catch (error) {
       setError(error.message);

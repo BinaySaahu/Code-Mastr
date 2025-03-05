@@ -38,7 +38,10 @@ export async function POST(request) {
         if (createdUser) {
           const token = jwt.sign(
             { id: createdUser.email },
-            process.env.SECRET_KEY
+            process.env.SECRET_KEY,
+            {
+              expiresIn: "5h",
+            }
           );
           const session = cookie.set({
             name: "auth",
@@ -58,6 +61,7 @@ export async function POST(request) {
             {
               text: "User created successfully",
               user: createdUser,
+              token: token,
             },
             { status: 200 }
           );

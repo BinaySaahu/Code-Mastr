@@ -37,17 +37,22 @@ export default function NavBar() {
   const dispatch = useDispatch();
   const loadUser = async () => {
     try {
-      const response = await fetch(`/api/getUser/?id=${1}`);
-      if (!response.ok) {
-        throw new Error("Response status", response.status);
-      }
+      const response = await fetch(`/api/getUser/?token=${localStorage.getItem('token')}`);
       const json = await response.json();
+      if(response.status === 401){
+        logout();
+        return;
+      }
+      if (!response.ok) {
+        throw new Error(json.text);
+      }
       console.log("User response->", json);
-      dispatch(addUser(json));
+      dispatch(addUser(json.user));
       setUserData(json);
     } catch (error) {
       console.log(error);
-      setUserData(userData);
+      alert(error.message);
+
     }
   };
 
@@ -55,19 +60,19 @@ export default function NavBar() {
     const session = await getSession();
     console.log(session);
   };
-  const logout = ()=>{
-    localStorage.removeItem('user')
-    window.location.reload()
-  }
+  const logout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    window.location.reload();
+  };
   useEffect(() => {
     getData();
-    let user = localStorage.getItem("user");
-    if (user !== undefined && user != null) {
-      setUserData(JSON.parse(user));
-      dispatch(addUser(JSON.parse(user)));
-    } else {
-      // loadUser();
+    let token = localStorage.getItem("token")
+    if(token) {
+      loadUser();
     }
+  }, []);
+  useEffect(() => {
     setPath(window.location.pathname);
   }, [window.location.pathname]);
   return (
@@ -121,9 +126,13 @@ export default function NavBar() {
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            <Button variant="default" onClick={() => signOut()}>
-              Contribute
-            </Button>
+            {USER.admin && (
+              <a href="/add-problem">
+                <Button variant="default" onClick={() => signOut()}>
+                  Add problem
+                </Button>
+              </a>
+            )}
             {USER.email ? (
               <Menu as="div" className="relative ml-3">
                 <div>
@@ -159,7 +168,7 @@ export default function NavBar() {
                   </MenuItem>
                   <MenuItem>
                     <p
-                    onClick={logout}
+                      onClick={logout}
                       className="cursor-pointer block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
                     >
                       Sign out
@@ -168,7 +177,12 @@ export default function NavBar() {
                 </MenuItems>
               </Menu>
             ) : (
-              <a href="/accounts/login" className="ml-4 text-base cursor-pointer">Login/Signup</a>
+              <a
+                href="/accounts/login"
+                className="ml-4 text-base cursor-pointer"
+              >
+                Login/Signup
+              </a>
             )}
           </div>
         </div>
