@@ -39,7 +39,8 @@ export default function NavBar() {
     try {
       const response = await fetch(`/api/getUser/?token=${localStorage.getItem('token')}`);
       const json = await response.json();
-      if(response.status === 401){
+      console.log(response.status)
+      if(json.status === 401){
         logout();
         return;
       }

@@ -4,9 +4,13 @@ const jwt = require('jsonwebtoken')
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const token = searchParams.get('token');
-  const decodedToken = jwt.verify(token, process.env.SECRET_KEY)
-  if(!decodedToken){
+  let decodedToken;
+  try{
+    decodedToken = jwt.verify(token, process.env.SECRET_KEY)
+
+  }catch(error){
     return NextResponse.json({status: 401},{message:"Token expired please login again!"})
+
   }
   console.log("User id: ",token)
   console.log("Decoded token: ",decodedToken)
