@@ -10,6 +10,7 @@ const {
 
 export async function POST(request) {
   console.log("Request Recieved to add a problem");
+  console.log(process.env.AWS_ACCESS_KEY_ID)
   const prisma = await generateClient();
   // console.log(request)
   try {
@@ -66,8 +67,8 @@ export async function POST(request) {
       const client = new S3Client({
         region: "ap-south-1",
         credentials: {
-          accessKeyId: "AKIAUH4KVXLAXBJTHB5K",
-          secretAccessKey: "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",
+          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
         },
       });
 
