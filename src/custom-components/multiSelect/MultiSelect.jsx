@@ -17,8 +17,10 @@ export default function FancyMultiSelect({selected, setSelected, TOPICS}) {
 //   const [selected, setSelected] = useState();
   const [inputValue, setInputValue] = useState("");
 
+  console.log(selected)
+
   const handleUnselect = useCallback((framework) => {
-    setSelected((prev) => prev.filter((s) => s.value !== framework.value));
+    setSelected((prev) => prev.filter((s) => s !== framework));
   }, []);
 
   const handleKeyDown = useCallback((e) => {
@@ -36,7 +38,7 @@ export default function FancyMultiSelect({selected, setSelected, TOPICS}) {
   }, []);
 
   const selectables = TOPICS.filter(
-    (framework) => !selected.some((s) => s.value === framework.value)
+    (framework) => !selected.some((s) => s === framework)
   );
 
   return (
@@ -44,8 +46,8 @@ export default function FancyMultiSelect({selected, setSelected, TOPICS}) {
       <div className="group rounded-md border border-input px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
         <div className="flex flex-wrap gap-1">
           {selected.map((framework) => (
-            <Badge key={framework.value} variant="secondary">
-              {framework.label}
+            <Badge key={framework} variant="secondary">
+              {framework}
               <button
                 className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 onMouseDown={(e) => e.preventDefault()}
@@ -73,7 +75,7 @@ export default function FancyMultiSelect({selected, setSelected, TOPICS}) {
               <CommandGroup className="h-full overflow-auto">
                 {selectables.map((framework) => (
                   <CommandItem
-                    key={framework.value}
+                    key={framework}
                     onMouseDown={(e) => e.preventDefault()}
                     onSelect={() => {
                       setInputValue("");
@@ -81,7 +83,7 @@ export default function FancyMultiSelect({selected, setSelected, TOPICS}) {
                     }}
                     className="cursor-pointer"
                   >
-                    {framework.label}
+                    {framework}
                   </CommandItem>
                 ))}
               </CommandGroup>
