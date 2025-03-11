@@ -5,7 +5,7 @@ export async function GET(request) {
     const prisma = generateClient();
     console.log("Recieved a request");
     const problems = await prisma.problem.findMany();
-    console.log(problems);
+    // console.log(problems);
     return NextResponse.json(problems);
   } catch (error) {
     console.log(error);
