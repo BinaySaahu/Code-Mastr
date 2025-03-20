@@ -25,6 +25,17 @@ export async function GET(request) {
       })
       .languages();
 
+    const langInfo = await prisma.language.findMany();
+    languages.forEach((lang) => {
+      langInfo.forEach((l) => {
+        if (l.languageId == lang.languageId) {
+          lang.name = l.name;
+          lang.slug = l.slug;
+          lang.version = l.version;
+        }
+      });
+    });
+
     problem = { ...problem, languages: languages };
     // console.log(problems);
     return NextResponse.json({ problem: problem }, { status: 200 });

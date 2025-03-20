@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import Editor, { DiffEditor, useMonaco, loader } from "@monaco-editor/react";
-import { LANGUAGE_VERSIONS, CODE_SNIPPETS } from "@/app/Languages";
 import {
   Select,
   SelectContent,
@@ -10,27 +9,30 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-const CodeEditor = () => {
-  const [language, setLanguage] = useState('javascript');
-  const [code, setCode] = useState(CODE_SNIPPETS[language])
-  let ALL_LANGUAGES = Object.keys(LANGUAGE_VERSIONS);
-  const handleLanguage = (language)=>{
-    console.log(language)
-    setLanguage(language);
-    setCode(CODE_SNIPPETS[language])
+const CodeEditor = ({codeSnippets}) => {
+  const [language, setLanguage] = useState(codeSnippets[0]);
+  const [code, setCode] = useState(codeSnippets[0].boilerplateCode)
+  const handleLanguage = (slug)=>{
+    // console.log(language)
+    codeSnippets.forEach((code)=>{
+      if(code.slug === slug){
+        setLanguage(code);
+        setCode(code.boilerplateCode)
+      }
+    })
 
   }
 
   return (
     <div className="border-[#fff]/[50%] border rounded-md p-3">
       <div className="flex justify-between items-center">
-      <Select defaultValue={language} onValueChange={(value)=>handleLanguage(value)}>
+      <Select defaultValue={language.slug} onValueChange={(value)=>handleLanguage(value)}>
         <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder={`${LANGUAGE_VERSIONS[language].name}&nbsp;(${LANGUAGE_VERSIONS[language].version})`} />
+          <SelectValue placeholder={`${language?.name}&nbsp;(${language?.version})`} />
         </SelectTrigger>
         <SelectContent>
-          {ALL_LANGUAGES.map((language,idx) => (
-            <SelectItem value={language} key={idx}>{LANGUAGE_VERSIONS[language].name}&nbsp;({LANGUAGE_VERSIONS[language].version})</SelectItem>
+          {codeSnippets?.map((language,idx) => (
+            <SelectItem value={language.slug} key={idx}>{language.name}&nbsp;({language.version})</SelectItem>
           ))}
         </SelectContent>
       </Select>
@@ -43,7 +45,7 @@ const CodeEditor = () => {
       <div className="mt-3">
         <Editor
           height="60vh"
-          language={language}
+          language={language.slug}
           value={code}
           theme="vs-dark"
           onChange={(value) => setCode(value)}

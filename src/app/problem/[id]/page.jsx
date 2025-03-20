@@ -1,8 +1,11 @@
+"use client"
 import CodeEditor from "@/custom-components/CodeEditor";
 import TestCases from "@/custom-components/TestCases";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-const page = ({ params }) => {
+const page = ({params}) => {
+  const [problemData, setProblemData] = useState();
   const testCases = [
     {
       input: "2 3",
@@ -18,16 +21,35 @@ const page = ({ params }) => {
     },
   ];
   const contraints = ["1 <= A <= 1000", "1 <= B <= 1000"];
+  const loadProblem = async()=>{
+    const par = await params;
+    try{
+      const response = await fetch(`/api/get-problem?id=${par.id}`);
+      const data = await response.json();
+      if(!response.ok){
+        throw new Error("Error in fetching problem");
+      }
+      console.log("data->",data.problem)
+      setProblemData(data.problem)
+
+    }catch(error){
+      console.error(error);
+      toast(error.message);
+    }
+
+  }
+  useEffect(()=>{
+    loadProblem();
+  },[])
   return (
     <div className="w-full px-5 h-screen flex">
       {/* problem statement */}
       <div className="w-1/2 h-screen overflow-scroll py-5 pt-20 px-2">
-        <h2 className="font-bold text-3xl">Two sum</h2>
-        <p className="mt-3">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Vero, quae
-          hic. Porro vel labore perferendis. Totam nihil aspernatur eius quasi.
-        </p>
-        <div className="py-5 flex flex-col gap-5">
+        <h2 className="font-bold text-3xl">{problemData?.name}</h2>
+        <div className="mt-3">
+          {problemData?.description}
+        </div>
+        {/* <div className="py-5 flex flex-col gap-5">
           <h3 className="font-bold text-2xl">Testcases</h3>
           {testCases.map((testCase, index) => (
             <div key={index} className={`w-11/12 ${index < 2 ? "block":"hidden"}`}>
@@ -49,11 +71,11 @@ const page = ({ params }) => {
               <li key={index}>{constraint}</li>
             ))}
           </ol>
-        </div>
+        </div> */}
       </div>
       {/* code editor */}
       <div className="w-1/2 h-screen overflow-scroll py-5 pt-20">
-        <CodeEditor />
+        {problemData && <CodeEditor codeSnippets = {problemData?.languages}/>}
         <TestCases testCases={testCases} />
       </div>
     </div>

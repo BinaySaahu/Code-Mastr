@@ -75,7 +75,7 @@ export default function NavBar() {
   }, []);
   useEffect(() => {
     setPath(window.location.pathname);
-  }, [window.location.pathname]);
+  }, []);
   return (
     <Disclosure
       as="nav"
