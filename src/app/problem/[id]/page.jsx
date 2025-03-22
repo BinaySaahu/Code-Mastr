@@ -15,20 +15,7 @@ import TestCasesSkeleton from "@/custom-components/TestCasesSkeleton";
 
 const page = ({ params }) => {
   const [problemData, setProblemData] = useState();
-  const testCases = [
-    {
-      input: "2 3",
-      output: "5",
-    },
-    {
-      input: "5 1",
-      output: "6",
-    },
-    {
-      input: "4 3",
-      output: "7",
-    },
-  ];
+
   const loadProblem = async () => {
     const par = await params;
     try {
@@ -92,7 +79,7 @@ const page = ({ params }) => {
         {!problemData ? (
           <TestCasesSkeleton />
         ) : (
-          <TestCases testCases={testCases} />
+          <TestCases testCases={problemData?.testcases} />
         )}
         
       </div>

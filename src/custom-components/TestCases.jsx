@@ -13,7 +13,11 @@ const TestCases = ({ testCases }) => {
         {testCases.map((testcase, index) => {
           return (
             <p
-              className={`p-3 rounded-md ${tab === index && "bg-[#fff]/[20%]"} ${index < 4 ? "flex":"hidden"} cursor-pointer hover:bg-[#fff]/[10%]`}
+              className={`p-3 rounded-md ${
+                tab === index && "bg-[#fff]/[20%]"
+              } ${
+                index < 4 ? "flex" : "hidden"
+              } cursor-pointer hover:bg-[#fff]/[10%]`}
               key={index}
               onClick={() => handleTab(index)}
             >
@@ -22,20 +26,19 @@ const TestCases = ({ testCases }) => {
           );
         })}
       </div>
-      {testCases.map((testCase, index) => (
-        <div key={index} className={`${tab === index && index < 4 ? "flex" : "hidden"}`}>
+      {testCases.map((testCase, index) => {
+        const inp = testCase.input.replace('\n','<br>')
+        const out = testCase.output.replace('\n', '<br>')
+        return (<div key={index} className={`${tab === index ? "flex" : "hidden"}`}>
           <div className="w-11/12">
             <p className="font-bold text-lg">Input</p>
-            <div className="w-full p-5 rounded-xl bg-[#343333] flex items-center text-white mt-2">
-              {testCase.input}
-            </div>
+            <div className="w-full p-5 rounded-xl bg-[#343333] flex items-center text-white mt-2" dangerouslySetInnerHTML={{ __html: inp }}/>
             <p className="font-bold text-lg mt-3">Output</p>
-            <div className="w-full p-5 rounded-xl bg-[#343333] flex items-center text-white mt-2">
-              {testCase.output}
-            </div>
+            <div className="w-full p-5 rounded-xl bg-[#343333] flex items-center text-white mt-2" dangerouslySetInnerHTML={{ __html: out }}/>
+              
           </div>
-        </div>
-      ))}
+        </div>)
+      })}
     </div>
   );
 };

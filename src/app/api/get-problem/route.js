@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { generateClient } from "@/server/db";
 import { GetObjectCommand, ListObjectsCommand, S3Client } from "@aws-sdk/client-s3";
+import { resolve } from "path";
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const problemId = Number(searchParams.get("id"));
@@ -54,20 +55,29 @@ export async function GET(request) {
     let outputs = await client.send(
       new ListObjectsCommand({
         Bucket: "code-mstr",
-        Prefix: `${problemId}/testcases/testcases/ouputs`,
+        Prefix: `${problemId}/testcases/testcases/outputs`,
         MaxKeys: 4
       })
     );
     inputs = inputs.Contents.filter((inp)=>inp.Key.endsWith('.txt'))
     outputs = outputs.Contents.filter((out)=>out.Key.endsWith('.txt'))
 
-    const inputsData = getData(inputs,client)
-    const outputsData = getData(outputs, client)
+    const inputsData = await getData(inputs,client)
+    const outputsData = await getData(outputs, client)
 
-    console.log(inputsData)
-    console.log(outputsData)
+    const testCases = []
 
-    problem = { ...problem, languages: languages };
+    for (let index = 0; index < inputsData.length; index++) {
+      const inp = inputsData[index];
+      const out = outputsData[index];
+      testCases.push({input: inp, output: out});
+      
+    }
+
+    // console.log(inputsData)
+    // console.log(outputsData)
+
+    problem = { ...problem, languages: languages, testcases: testCases };
     // console.log(problems);
     return NextResponse.json({ problem: problem }, { status: 200 });
   } catch (error) {
@@ -78,27 +88,32 @@ export async function GET(request) {
     );
   }
 }
+const getObjectFromBucket = async(client, key)=>{
+  const info = await client.send(
+    new GetObjectCommand({
+      Bucket: 'code-mstr',
+      Key: key
+    })
+  )
+  const streamToString = (stream) =>
+    new Promise((resolve, reject) => {
+      const chunks = [];
+      stream.on("data", (chunk) => chunks.push(chunk));
+      stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf-8")));
+      stream.on("error", reject);
+    });
+  const fileContent = await streamToString(info.Body);
+  return fileContent
+}
 
-const getData = (content, client)=>{
+const getData = async (content, client)=>{
   let data = [];
-  content.forEach(async(item)=>{
-    const info = await client.send(
-      new GetObjectCommand({
-        Bucket: 'code-mstr',
-        Key: item.Key
-      })
-    )
-    const streamToString = (stream) =>
-      new Promise((resolve, reject) => {
-        const chunks = [];
-        stream.on("data", (chunk) => chunks.push(chunk));
-        stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf-8")));
-        stream.on("error", reject);
-      });
-    const fileContent = await streamToString(info.Body);
-    console.log(fileContent)
-    data.push(fileContent)
-  })
+  for (let index = 0; index < content.length; index++) {
+    const item = content[index];
+    const info = await getObjectFromBucket(client, item.Key)
+    // console.log(fileContent)
+    data.push(info)  
+  }
   return data;
 
 }
