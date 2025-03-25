@@ -12,9 +12,16 @@ import {
 import ProblemStatementSkeleton from "@/custom-components/ProblemStatementSkeleton";
 import CodeEditorSkeleton from "@/custom-components/CodeEditorSkeleton";
 import TestCasesSkeleton from "@/custom-components/TestCasesSkeleton";
+import RuntimeError from "@/custom-components/RuntimeError";
+import CompileTimeError from "@/custom-components/CompileTimeError";
 
 const page = ({ params }) => {
   const [problemData, setProblemData] = useState();
+  const [language, setLanguage] = useState();
+  const [code, setCode] = useState();
+  const [executionStatus, setExecutionStatus] = useState(9);
+  const [output, setOutput] = useState("processing");
+  const [passedTestCases, setPassedTestCases] = useState();
 
   const loadProblem = async () => {
     const par = await params;
@@ -26,11 +33,61 @@ const page = ({ params }) => {
       }
       console.log("data->", data.problem);
       setProblemData(data.problem);
+      setLanguage(data.problem.languages[0]);
+      setCode(data.problem.languages[0].boilerplateCode);
     } catch (error) {
       console.error(error);
       toast(error.message);
     }
   };
+
+  const getTestCases = () => {
+    if (executionStatus === 1 || executionStatus === 2 || executionStatus === 9) {
+      return (
+        <TestCases
+          testCases={problemData?.testcases}
+          output={output}
+          passedTestCases={passedTestCases}
+        />
+      );
+    } else if (executionStatus === 3) {
+      return <RuntimeError err={output} />;
+    } else if (executionStatus === 4) {
+      return <CompileTimeError err={output} />;
+    }
+  };
+
+  const runProblem = async () => {
+    setExecutionStatus(0);
+    const obj = {
+      problemId: problemData.id,
+      code: code,
+      languageId: language.languageId,
+      testcases: problemData.testcases,
+    };
+    console.log(obj);
+    try {
+      const response = await fetch("/api/submission/run", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(obj),
+      });
+      const json = await response.json();
+      if (!response.ok) {
+        throw new Error(json.text);
+      }
+      console.log(json);
+      setExecutionStatus(json.code);
+      setOutput(json.text);
+      setPassedTestCases(json.data);
+    } catch (error) {
+      console.log(error);
+      toast(error);
+    }
+  };
+  const submitProblem = () => {};
   useEffect(() => {
     loadProblem();
   }, []);
@@ -74,14 +131,22 @@ const page = ({ params }) => {
         {!problemData ? (
           <CodeEditorSkeleton />
         ) : (
-          <CodeEditor codeSnippets={problemData?.languages} />
+          <CodeEditor
+            codeSnippets={problemData?.languages}
+            language={language}
+            setLanguage={setLanguage}
+            code={code}
+            setCode={setCode}
+            runProblem={runProblem}
+            submitProblem={submitProblem}
+            executionStatus = {executionStatus}
+          />
         )}
-        {!problemData ? (
+        {!problemData || executionStatus === 0 ? (
           <TestCasesSkeleton />
         ) : (
-          <TestCases testCases={problemData?.testcases} />
+          getTestCases()
         )}
-        
       </div>
     </div>
   );

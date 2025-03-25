@@ -9,9 +9,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-const CodeEditor = ({codeSnippets}) => {
-  const [language, setLanguage] = useState(codeSnippets[0]);
-  const [code, setCode] = useState(codeSnippets[0].boilerplateCode)
+import { Loader2 } from "lucide-react";
+const CodeEditor = ({codeSnippets, language, setLanguage, code, setCode, runProblem, submitProblem, executionStatus}) => {
+  
   const handleLanguage = (slug)=>{
     // console.log(language)
     codeSnippets.forEach((code)=>{
@@ -36,10 +36,14 @@ const CodeEditor = ({codeSnippets}) => {
           ))}
         </SelectContent>
       </Select>
-      <div className="flex items-center gap-2">
-        <Button variant = "outline">Run</Button>
-        <Button variant = "default">Submit</Button> 
-      </div>
+      {executionStatus === 0? 
+      <Button disabled><Loader2 className="animate-spin"/>Executing....</Button>
+      :
+      (<div className="flex items-center gap-2">
+        <Button variant = "outline" onClick = {runProblem}>Run</Button>
+        <Button variant = "default" onClick = {submitProblem}>Submit</Button> 
+      </div>)
+      }
 
       </div>
       <div className="mt-3">
