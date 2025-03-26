@@ -145,7 +145,7 @@ const requestPolling = async (tokens) => {
     const data = await submissionResult.json();
     let flag = true;
     for (const submission of data.submissions) {
-      if (submission.status.id === 2) {
+      if (submission.status.id === 2 || submission.status.id === 1) {
         flag = false;
       }
     }
