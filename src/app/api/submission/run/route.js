@@ -14,13 +14,7 @@ const {
 
 export async function POST(request) {
   console.log("Request Recieved to run a problem");
-  const prisma = await generateClient();
   const { code, languageId, testcases, problemId } = await request.json();
-
-  console.log(code);
-  console.log(languageId);
-  console.log(testcases);
-  console.log(problemId);
   //langauge, code(function), testCases, problemID
   //   2 -> processing
   //   3 -> Accepted
@@ -136,7 +130,7 @@ const requestPolling = async (tokens) => {
 
   let allSubmissions = [];
 
-  while (doneTries <= maxTries) {
+  while (true) {
     const submissionResult = await fetch(
       `https://judge0-ce.p.rapidapi.com/submissions/batch?tokens=${tokens
         .map((s) => s.token)
@@ -158,6 +152,7 @@ const requestPolling = async (tokens) => {
     if (flag) {
       console.log("All submissions executed");
       allSubmissions = data.submissions;
+      console.log("All submissions->", allSubmissions)
       break;
     } else {
       console.log("Still processing...");
