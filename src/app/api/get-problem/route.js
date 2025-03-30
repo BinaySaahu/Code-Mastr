@@ -4,7 +4,7 @@ import { GetObjectCommand, ListObjectsCommand, S3Client } from "@aws-sdk/client-
 import { resolve } from "path";
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
-  const problemId = Number(searchParams.get("id"));
+  const problemId = searchParams.get("id");
   console.log("problemId->", problemId);
   try {
     const prisma = generateClient();

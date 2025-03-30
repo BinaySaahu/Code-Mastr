@@ -20,6 +20,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { addUser, setToken } from "@/app/data-store/slices/userSlice";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 const LoginModal = () => {
   const {
@@ -30,8 +31,10 @@ const LoginModal = () => {
   const dispatch = useDispatch();
   const { push } = useRouter();
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false)
 
   const submit = async (data) => {
+    setLoading(true)
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
@@ -48,10 +51,12 @@ const LoginModal = () => {
       
       dispatch(addUser(json.user));
       dispatch(setToken(json.token));
+      setLoading(false)
       push("/");
     } catch (error) {
       setError(error.message);
       console.log(error);
+      setLoading(false)
     }
   };
   return (
@@ -105,9 +110,16 @@ const LoginModal = () => {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col items-center justify-center gap-4">
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
+            {
+              loading?
+              <Button disabled className="w-full">
+                <Loader2 className="animate-spin"/>Logging in
+              </Button>
+              :
+              <Button type="submit" className="w-full">
+                Login
+              </Button>
+            }
             {error && (
               <p className="text-red-600 w-full text-center mt-1 text-xs">
                 {error}

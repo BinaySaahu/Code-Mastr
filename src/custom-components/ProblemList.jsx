@@ -30,7 +30,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const ProblemList = () => {
   const [problemList, setProblemList] = useState([]);
   const [pageNum, setPageNum] = useState(1);
-  const [pageProblems, setPageProblems] = useState();
+  const [pageProblems, setPageProblems] = useState(null);
   const [loading, setLoading] = useState(true);
   const USER = useSelector((state) => state.user);
 
@@ -70,7 +70,7 @@ const ProblemList = () => {
   let pages = Math.ceil(problemList.length / 10);
   return (
     <div>
-      {loading ? (
+      {pageProblems === null ? (
         <div className="w-full h-full flex flex-col gap-3">
           <div className="w-full py-3 border-b">
             <Skeleton className="w-full h-10" />
@@ -87,6 +87,10 @@ const ProblemList = () => {
           <Skeleton className="w-full h-10" />
         </div>
       ) : (
+        pageProblems.length == 0?
+        <p className="flex items-center justify-center w-full py-10">Sorry no problem has been added yet</p>
+        :
+
         <>
           <Table>
             {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
@@ -104,7 +108,7 @@ const ProblemList = () => {
               {pageProblems?.map((problem, idx) => {
                 return (
                   <TableRow key={idx}>
-                    <TableCell className="font-medium">{problem.id}</TableCell>
+                    <TableCell className="font-medium">{idx+1}</TableCell>
                     <TableCell className="font-medium">
                       {USER.solved?.map((solved, idx) => {
                         if (solved.id === problem.id)

@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { addUser, setToken } from "@/app/data-store/slices/userSlice";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 const SignupModal = () => {
   const {
@@ -27,9 +28,11 @@ const SignupModal = () => {
   const dispatch = useDispatch()
   const {push} = useRouter()
   const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
   const submit = async (userData) => {
     console.log("User data->", userData);
+    setLoading(true)
 
     try {
       const res = await fetch("/api/auth/signup", {
@@ -47,11 +50,13 @@ const SignupModal = () => {
       
       dispatch(addUser(data.user))
       dispatch(setToken(data.token))
+      setLoading(false)
       push('/')
       console.log(data);
     } catch (error) {
       setError(error.message);
       console.log(error);
+      setLoading(false)
     }
   };
   return (
@@ -117,9 +122,16 @@ const SignupModal = () => {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col items-center justify-center gap-4">
-            <Button className="w-full" type="submit">
-              Register
-            </Button>
+          {
+              loading?
+              <Button disabled className="w-full">
+                <Loader2 className="animate-spin"/>Signing up
+              </Button>
+              :
+              <Button type="submit" className="w-full">
+                Sign up
+              </Button>
+            }
             {error && (
               <p className="text-red-600 w-full text-center mt-1 text-xs">
                 {error}

@@ -69,95 +69,109 @@ export async function POST(request) {
       },
     });
 
-    let createdProblem = null
-    if(client){
-      createdProblem = await prisma.problem.create({
-        data: problemData,
-      });
-
-    }else{
-      return NextResponse.json({text:"Error in creating AWS client"}, {status: 400})
-    }
-    if (createdProblem) {
-      const problemId = createdProblem.id;
-
-      await client.send(
-        new PutObjectCommand({
-          Bucket: "code-mstr",
-          Key: `${problemId}/structure.md`,
-          Body: structure,
-        })
-      );
-
-      allSolutions.forEach(async (element) => {
-        await client.send(
-          new PutObjectCommand({
-            Bucket: "code-mstr",
-            Key: `${problemId}/solutions/${element.entryName}`,
-            Body: element.getData(),
-          })
-        );
-      });
-      allTestCases.forEach(async (element) => {
-        await client.send(
-          new PutObjectCommand({
-            Bucket: "code-mstr",
-            Key: `${problemId}/testcases/${element.entryName}`,
-            Body: element.getData(),
-          })
-        );
-      });
-      const info = await client.send(
-        new GetObjectCommand({
-          Bucket: "code-mstr",
-          Key: `${problemId}/structure.md`,
-        })
-      );
-      const streamToString = (stream) =>
-        new Promise((resolve, reject) => {
-          const chunks = [];
-          stream.on("data", (chunk) => chunks.push(chunk));
-          stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf-8")));
-          stream.on("error", reject);
+    // let createdProblem = null
+    if (client) {
+      const result = await prisma.$transaction(async (tx) => {
+        let createdProblem = await tx.problem.create({
+          data: problemData,
         });
-      const fileContent = await streamToString(info.Body);
+        const problemId = createdProblem.id;
 
-      const {inputs, functionName, output} = parser(fileContent);
+        await client.send(
+          new PutObjectCommand({
+            Bucket: "code-mstr",
+            Key: `${problemId}/structure.md`,
+            Body: structure,
+          })
+        );
 
-      const cppFunction = generateCppFunction(inputs, functionName, output);
-      const jsFunction = generateJSFunction(inputs, functionName)
-      const pyFunction = generatePyFunction(inputs, functionName);
+        await Promise.all(
+          allTestCases.map(async (element) => {
+            await client.send(
+              new PutObjectCommand({
+                Bucket: "code-mstr",
+                Key: `${problemId}/testcases/${element.entryName}`,
+                Body: element.getData(),
+              })
+            );
+          })
+        );
+        await Promise.all(
+          allSolutions.map(async (element) => {
+            await client.send(
+              new PutObjectCommand({
+                Bucket: "code-mstr",
+                Key: `${problemId}/solutions/${element.entryName}`,
+                Body: element.getData(),
+              })
+            );
+          })
+        );
+        const info = await client.send(
+          new GetObjectCommand({
+            Bucket: "code-mstr",
+            Key: `${problemId}/structure.md`,
+          })
+        );
+        const streamToString = (stream) =>
+          new Promise((resolve, reject) => {
+            const chunks = [];
+            stream.on("data", (chunk) => chunks.push(chunk));
+            stream.on("end", () =>
+              resolve(Buffer.concat(chunks).toString("utf-8"))
+            );
+            stream.on("error", reject);
+          });
+        const fileContent = await streamToString(info.Body);
 
-      const jsFunctionAdd = await prisma.LanguageOnProblem.create({
-        data:{
-          problemId,
-          languageId: 102,
-          boilerplateCode: jsFunction
-        }
-      })
-      const cppFunctionAdd = await prisma.LanguageOnProblem.create({
-        data:{
-          problemId,
-          languageId: 105,
-          boilerplateCode: cppFunction
-        }
-      })
-      const pyFunctionAdd = await prisma.LanguageOnProblem.create({
-        data:{
-          problemId,
-          languageId: 100,
-          boilerplateCode: pyFunction
-        }
-      })
-      return NextResponse.json({ text: "Problem Added" }, { status: 200 });
+        const { inputs, functionName, output } = parser(fileContent);
+
+        const cppFunction = generateCppFunction(inputs, functionName, output);
+        const jsFunction = generateJSFunction(inputs, functionName);
+        const pyFunction = generatePyFunction(inputs, functionName);
+
+        const jsFunctionAdd = await tx.LanguageOnProblem.create({
+          data: {
+            problemId,
+            languageId: 102,
+            boilerplateCode: jsFunction,
+          },
+        });
+        const cppFunctionAdd = await tx.LanguageOnProblem.create({
+          data: {
+            problemId,
+            languageId: 105,
+            boilerplateCode: cppFunction,
+          },
+        });
+        const pyFunctionAdd = await tx.LanguageOnProblem.create({
+          data: {
+            problemId,
+            languageId: 100,
+            boilerplateCode: pyFunction,
+          },
+        });
+        return true;
+      });
+      if (result) {
+        return NextResponse.json(
+          { text: "Problem added successfully" },
+          { status: 200 }
+        );
+      } else {
+        throw new Error();
+      }
     } else {
       return NextResponse.json(
-        { text: "Unable to add the problem" },
+        { text: "Error in creating AWS client" },
         { status: 400 }
       );
     }
   } catch (error) {
     console.log(error.message);
-    return NextResponse.json({ text: error.message }, { status: 500 });
+    return NextResponse.json(
+      { text: "Unable to add the problem" },
+      { status: 500 }
+    );
   }
 }
