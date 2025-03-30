@@ -16,6 +16,7 @@ export async function POST(request) {
   console.log("Request Recieved to run a problem");
   const { code, languageId, testcases, problemId } = await request.json();
   //langauge, code(function), testCases, problemID
+  //   1 -> In queue
   //   2 -> processing
   //   3 -> Accepted
   //   4 -> wrong answer
