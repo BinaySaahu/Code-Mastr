@@ -10,11 +10,13 @@ const {
   ListBucketsCommand,
   GetObjectCommand,
   PutObjectCommand,
+  ListObjectsCommand,
 } = require("@aws-sdk/client-s3");
 
 export async function POST(request) {
   console.log("Request Recieved to run a problem");
-  const { code, languageId, testcases, problemId } = await request.json();
+  const { code, languageId, userId, problemId } = await request.json();
+  const prisma = await generateClient();
   //langauge, code(function), testCases, problemID
   //   1 -> In queue
   //   2 -> processing
@@ -39,6 +41,42 @@ export async function POST(request) {
         Key: `${problemId}/structure.md`,
       })
     );
+    let testcase_inputs = await client.send(
+      new ListObjectsCommand({
+        Bucket: "code-mstr",
+        Prefix: `${problemId}/testcases/testcases/inputs`,
+      })
+    );
+    let testcase_outputs = await client.send(
+      new ListObjectsCommand({
+        Bucket: "code-mstr",
+        Prefix: `${problemId}/testcases/testcases/outputs`,
+      })
+    );
+    testcase_inputs = testcase_inputs.Contents.filter((inp) =>
+      inp.Key.endsWith(".txt")
+    );
+    testcase_outputs = testcase_outputs.Contents.filter((out) =>
+      out.Key.endsWith(".txt")
+    );
+
+    const inputsData = await getData(testcase_inputs, client);
+    const outputsData = await getData(testcase_outputs, client);
+
+    const testcases = [];
+
+    for (let index = 0; index < inputsData.length; index++) {
+      const input = inputsData[index];
+      const output = outputsData[index];
+
+      testcases.push({
+        input: input,
+        output: output,
+      });
+    }
+
+    // console.log(testcases)
+
     const streamToString = (stream) =>
       new Promise((resolve, reject) => {
         const chunks = [];
@@ -48,9 +86,9 @@ export async function POST(request) {
         );
         stream.on("error", reject);
       });
-    const fileContent = await streamToString(info.Body);
+    const structure = await streamToString(info.Body);
     //   console.log("Structure->", fileContent)
-    const { inputs, functionName, output } = parser(fileContent);
+    const { inputs, functionName, output } = parser(structure);
     let fullCode;
 
     if (languageId == 105) {
@@ -69,6 +107,50 @@ export async function POST(request) {
       };
       submissions.push(submission);
     }
+    let submissionId;
+    try{
+      const addSubmission = await prisma.$transaction(async(tx)=>{
+        const submission = await tx.submission.create({
+          data:{
+            userId: userId,
+            problemId: problemId,
+            code: code,
+          }
+        })
+        submissionId = submission.id;
+        console.log("Submission id->", submissionId)
+  
+        const problemStatus = await tx.problemStatus.findUnique({
+          where: {
+            userId_problemId:{
+              problemId: problemId,
+              userId: userId
+            }
+          }
+        })
+        console.log("problemStatus->", problemStatus)
+        if(!problemStatus){
+          const createProblemStatus = await tx.problemStatus.create({
+            data:{
+              problemId: problemId,
+              userId: userId,
+              status: "processing"
+            }
+          })
+        }
+        return true;
+      })
+
+      if(addSubmission){
+        console.log("Submission created!!");
+      }
+    }catch(error){
+      console.log(error)
+    }
+
+
+    // console.log(submissions)
+    // return NextResponse.json({ data: submissions });
     const submittedRes = await fetch(
       "https://judge0-ce.p.rapidapi.com/submissions/batch?base64_encoded=false",
       {
@@ -84,6 +166,62 @@ export async function POST(request) {
 
     // step 3: submissin request(GET)
     const data = await requestPolling(submittedResJson);
+
+
+    try{
+      let submissionStatus = "attempted"
+      for (const sub of data) {
+        if (sub.status.id === 11) {
+          submissionStatus = "RUNTIME ERR";
+          break;
+        }else if(sub.status.id === 6){
+          submissionStatus = "COMPILATION ERR";
+        }else if(sub.status.id === 3){
+          submissionStatus = "ACCEPTED";
+        }
+      }
+
+      const updateSubmission = await prisma.$transaction(async(tx)=>{
+        const submission = await tx.submission.update({
+          where:{
+            id: submissionId
+          },
+          data:{
+            status: submissionStatus
+          }
+        })
+        const problemStatus = await tx.problemStatus.findUnique({
+          where: {
+            userId_problemId:{
+              problemId: problemId,
+              userId: userId
+            }
+          }
+        })
+        if(problemStatus.status !== "ACCEPTED"){
+          const updateproblemStatus = await tx.problemStatus.update({
+            where: {
+              userId_problemId:{
+                problemId: problemId,
+                userId: userId
+              }
+            },
+            data:{
+              status: submissionStatus
+            }
+          })
+
+        }
+  
+        return true;
+      })
+
+      if(updateSubmission){
+        console.log("Submission updated!!");
+      }
+    }catch(error){
+      console.log(error)
+    }
     // compilation error
     if (data[0].status.id === 6) {
       return NextResponse.json({
@@ -107,21 +245,24 @@ export async function POST(request) {
     let wrongAns = false;
     for (const sub of data) {
       if (sub.status.id === 4) {
-        returnObj.push({status: "wrong", output: sub.stdout});
+        returnObj.push({ status: "wrong", output: sub.stdout });
         wrongAns = true;
       } else {
-        returnObj.push({status:"acc", output: sub.stdout});
+        returnObj.push({ status: "acc", output: sub.stdout });
       }
     }
 
     return NextResponse.json({
       text: `${wrongAns ? "Wrong Answer" : "Accepted"}`,
       data: returnObj,
-      code: wrongAns ? 2:1,
+      code: wrongAns ? 2 : 1,
     });
   } catch (error) {
     console.log(error);
-    return NextResponse.json({ text: "Internal server error" });
+    return NextResponse.json(
+      { text: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -153,7 +294,7 @@ const requestPolling = async (tokens) => {
     if (flag) {
       console.log("All submissions executed");
       allSubmissions = data.submissions;
-      console.log("All submissions->", allSubmissions)
+      // console.log("All submissions->", allSubmissions);
       break;
     } else {
       console.log("Still processing...");
@@ -162,4 +303,32 @@ const requestPolling = async (tokens) => {
     await new Promise((resolve) => setTimeout(resolve, 2000));
   }
   return allSubmissions;
+};
+const getObjectFromBucket = async (client, key) => {
+  const info = await client.send(
+    new GetObjectCommand({
+      Bucket: "code-mstr",
+      Key: key,
+    })
+  );
+  const streamToString = (stream) =>
+    new Promise((resolve, reject) => {
+      const chunks = [];
+      stream.on("data", (chunk) => chunks.push(chunk));
+      stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf-8")));
+      stream.on("error", reject);
+    });
+  const fileContent = await streamToString(info.Body);
+  return fileContent;
+};
+
+const getData = async (content, client) => {
+  let data = [];
+  for (let index = 0; index < content.length; index++) {
+    const item = content[index];
+    const info = await getObjectFromBucket(client, item.Key);
+    // console.log(fileContent)
+    data.push(info);
+  }
+  return data;
 };

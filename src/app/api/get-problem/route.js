@@ -106,6 +106,7 @@ const getObjectFromBucket = async(client, key)=>{
   return fileContent
 }
 
+
 const getData = async (content, client)=>{
   let data = [];
   for (let index = 0; index < content.length; index++) {

@@ -69,6 +69,7 @@ export async function POST(request) {
       };
       submissions.push(submission);
     }
+    console.log(submissions)
     const submittedRes = await fetch(
       "https://judge0-ce.p.rapidapi.com/submissions/batch?base64_encoded=false",
       {
@@ -82,7 +83,7 @@ export async function POST(request) {
     );
     const submittedResJson = await submittedRes.json();
 
-    // step 3: submissin request(GET)
+    // step 3: submission request(GET)
     const data = await requestPolling(submittedResJson);
     // compilation error
     if (data[0].status.id === 6) {
@@ -107,17 +108,17 @@ export async function POST(request) {
     let wrongAns = false;
     for (const sub of data) {
       if (sub.status.id === 4) {
-        returnObj.push({status: "wrong", output: sub.stdout});
+        returnObj.push({ status: "wrong", output: sub.stdout });
         wrongAns = true;
       } else {
-        returnObj.push({status:"acc", output: sub.stdout});
+        returnObj.push({ status: "acc", output: sub.stdout });
       }
     }
 
     return NextResponse.json({
       text: `${wrongAns ? "Wrong Answer" : "Accepted"}`,
       data: returnObj,
-      code: wrongAns ? 2:1,
+      code: wrongAns ? 2 : 1,
     });
   } catch (error) {
     console.log(error);
@@ -153,7 +154,7 @@ const requestPolling = async (tokens) => {
     if (flag) {
       console.log("All submissions executed");
       allSubmissions = data.submissions;
-      console.log("All submissions->", allSubmissions)
+      console.log("All submissions->", allSubmissions);
       break;
     } else {
       console.log("Still processing...");
