@@ -169,7 +169,7 @@ export async function POST(request) {
 
 
     try{
-      let submissionStatus = "attempted"
+      let submissionStatus = "ATTEMPTED"
       for (const sub of data) {
         if (sub.status.id === 11) {
           submissionStatus = "RUNTIME ERR";

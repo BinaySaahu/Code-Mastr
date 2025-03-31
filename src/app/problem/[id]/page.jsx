@@ -9,11 +9,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProblemStatementSkeleton from "@/custom-components/ProblemStatementSkeleton";
 import CodeEditorSkeleton from "@/custom-components/CodeEditorSkeleton";
 import TestCasesSkeleton from "@/custom-components/TestCasesSkeleton";
 import RuntimeError from "@/custom-components/RuntimeError";
 import CompileTimeError from "@/custom-components/CompileTimeError";
+import Submissions from "@/custom-components/pages/problem/Submissions";
+import ProblemStatement from "@/custom-components/pages/problem/ProblemStatement";
+import { useSelector } from "react-redux";
+import ProblemListSkeleton from "@/custom-components/ProblemListSkeleton";
 
 const page = ({ params }) => {
   const [problemData, setProblemData] = useState();
@@ -22,11 +27,15 @@ const page = ({ params }) => {
   const [executionStatus, setExecutionStatus] = useState(9);
   const [output, setOutput] = useState("processing");
   const [passedTestCases, setPassedTestCases] = useState();
+  const [submissions, setSubmissions] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const USER = useSelector((state) => state.user);
 
   const loadProblem = async () => {
+    setLoading(true);
     const par = await params;
     try {
-      const response = await fetch(`/api/get-problem?id=${par.id}`);
+      const response = await fetch(`/api/get-problem?id=${par.id}&userId=${USER.userId}`);
       const data = await response.json();
       if (!response.ok) {
         throw new Error("Error in fetching problem");
@@ -35,14 +44,21 @@ const page = ({ params }) => {
       setProblemData(data.problem);
       setLanguage(data.problem.languages[0]);
       setCode(data.problem.languages[0].boilerplateCode);
+      setSubmissions(data.submissions)
+      setLoading(false);
     } catch (error) {
       console.error(error);
       toast(error.message);
+      setLoading(false)
     }
   };
 
   const getTestCases = () => {
-    if (executionStatus === 1 || executionStatus === 2 || executionStatus === 9) {
+    if (
+      executionStatus === 1 ||
+      executionStatus === 2 ||
+      executionStatus === 9
+    ) {
       return (
         <TestCases
           testCases={problemData?.testcases}
@@ -90,7 +106,7 @@ const page = ({ params }) => {
   const submitProblem = () => {};
   useEffect(() => {
     loadProblem();
-  }, []);
+  }, [USER]);
   return (
     <div className="w-full px-5 h-screen flex">
       {/* problem statement */}
@@ -99,30 +115,19 @@ const page = ({ params }) => {
           <ProblemStatementSkeleton />
         ) : (
           <div className="w-full">
-            <h2 className="font-bold text-3xl">{problemData?.name}</h2>
-            <div className="my-5 flex items-center gap-4">
-              <Badge variant={problemData?.difficulty}>
-                {problemData?.difficulty}
-              </Badge>
-              <Popover>
-                <Badge variant="outline">
-                  <PopoverTrigger>Topics</PopoverTrigger>
-                </Badge>
-                <PopoverContent>
-                  {problemData?.topics.map((topic, idx) => {
-                    return (
-                      <Badge variant="outline" key={idx}>
-                        {topic}
-                      </Badge>
-                    );
-                  })}
-                </PopoverContent>
-              </Popover>
-            </div>
-            <div
-              className="mt-3"
-              dangerouslySetInnerHTML={{ __html: problemData?.description }}
-            />
+            <Tabs defaultValue="problem" className="w-full pb-5">
+              <TabsList>
+                <TabsTrigger value="problem">Problem</TabsTrigger>
+                <TabsTrigger value="submission">Submissions</TabsTrigger>
+              </TabsList>
+              <TabsContent value="problem" className = "w-full">
+                <ProblemStatement problemData = {problemData}/>
+                
+              </TabsContent>
+              <TabsContent value="submission">
+                {!problemData ? <ProblemListSkeleton/>:(problemData.submissions.length === 0 ?<p className="text-white">No submissions yet</p> :<Submissions submissions = {problemData.submissions}/>)}
+              </TabsContent>
+            </Tabs>
           </div>
         )}
       </div>
@@ -139,7 +144,7 @@ const page = ({ params }) => {
             setCode={setCode}
             runProblem={runProblem}
             submitProblem={submitProblem}
-            executionStatus = {executionStatus}
+            executionStatus={executionStatus}
           />
         )}
         {!problemData || executionStatus === 0 ? (

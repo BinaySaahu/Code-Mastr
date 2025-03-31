@@ -5,7 +5,9 @@ import { resolve } from "path";
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const problemId = searchParams.get("id");
+  const userId = searchParams.get("userId")
   console.log("problemId->", problemId);
+  console.log("User id->", userId);
   try {
     const prisma = generateClient();
     console.log("Recieved a request");
@@ -37,6 +39,15 @@ export async function GET(request) {
         }
       });
     });
+
+    
+
+    let submissions = await prisma.submission.findMany({
+      where:{
+        problemId:problemId,
+        userId:userId
+      }
+    })
 
     const client = new S3Client({
       region: "ap-south-1",
@@ -77,7 +88,7 @@ export async function GET(request) {
     // console.log(inputsData)
     // console.log(outputsData)
 
-    problem = { ...problem, languages: languages, testcases: testCases };
+    problem = { ...problem, languages: languages, testcases: testCases, submissions: submissions };
     // console.log(problems);
     return NextResponse.json({ problem: problem }, { status: 200 });
   } catch (error) {

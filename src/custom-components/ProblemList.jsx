@@ -26,6 +26,7 @@ import { useSelector } from "react-redux";
 import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import ProblemListSkeleton from "./ProblemListSkeleton";
 
 const ProblemList = () => {
   const [problemList, setProblemList] = useState([]);
@@ -71,21 +72,7 @@ const ProblemList = () => {
   return (
     <div>
       {pageProblems === null ? (
-        <div className="w-full h-full flex flex-col gap-3">
-          <div className="w-full py-3 border-b">
-            <Skeleton className="w-full h-10" />
-          </div>
-          <Skeleton className="w-full h-10" />
-          <Skeleton className="w-full h-10" />
-          <Skeleton className="w-full h-10" />
-          <Skeleton className="w-full h-10" />
-          <Skeleton className="w-full h-10" />
-          <Skeleton className="w-full h-10" />
-          <Skeleton className="w-full h-10" />
-          <Skeleton className="w-full h-10" />
-          <Skeleton className="w-full h-10" />
-          <Skeleton className="w-full h-10" />
-        </div>
+        <ProblemListSkeleton/>
       ) : (
         pageProblems.length == 0?
         <p className="flex items-center justify-center w-full py-10">Sorry no problem has been added yet</p>
