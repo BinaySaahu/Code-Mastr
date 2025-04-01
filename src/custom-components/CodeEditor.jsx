@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-const CodeEditor = ({codeSnippets, language, setLanguage, code, setCode, runProblem, submitProblem, executionStatus}) => {
+const CodeEditor = ({codeSnippets, language, setLanguage, code, setCode, runProblem, submitProblem, runStatus, submitStatus}) => {
   
   const handleLanguage = (slug)=>{
     // console.log(language)
@@ -36,7 +36,7 @@ const CodeEditor = ({codeSnippets, language, setLanguage, code, setCode, runProb
           ))}
         </SelectContent>
       </Select>
-      {executionStatus === 0? 
+      {(runStatus === 0 || submitStatus === 0)? 
       <Button disabled><Loader2 className="animate-spin"/>Executing....</Button>
       :
       (<div className="flex items-center gap-2">

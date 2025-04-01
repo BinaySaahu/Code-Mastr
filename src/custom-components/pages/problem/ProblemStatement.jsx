@@ -8,7 +8,7 @@ import {
   } from "@/components/ui/popover";
 import React from "react";
 
-const ProblemStatement = ({problemData}) => {
+const ProblemStatement = ({problemData, executionStatus}) => {
   return (
     <>
       <h2 className="font-bold text-3xl">{problemData?.name}</h2>

@@ -108,46 +108,45 @@ export async function POST(request) {
       submissions.push(submission);
     }
     let submissionId;
-    try{
-      const addSubmission = await prisma.$transaction(async(tx)=>{
+    try {
+      const addSubmission = await prisma.$transaction(async (tx) => {
         const submission = await tx.submission.create({
-          data:{
+          data: {
             userId: userId,
             problemId: problemId,
             code: code,
-          }
-        })
+          },
+        });
         submissionId = submission.id;
-        console.log("Submission id->", submissionId)
-  
+        console.log("Submission id->", submissionId);
+
         const problemStatus = await tx.problemStatus.findUnique({
           where: {
-            userId_problemId:{
-              problemId: problemId,
-              userId: userId
-            }
-          }
-        })
-        console.log("problemStatus->", problemStatus)
-        if(!problemStatus){
-          const createProblemStatus = await tx.problemStatus.create({
-            data:{
+            userId_problemId: {
               problemId: problemId,
               userId: userId,
-              status: "processing"
-            }
-          })
+            },
+          },
+        });
+        console.log("problemStatus->", problemStatus);
+        if (!problemStatus) {
+          const createProblemStatus = await tx.problemStatus.create({
+            data: {
+              problemId: problemId,
+              userId: userId,
+              status: "processing",
+            },
+          });
         }
         return true;
-      })
+      });
 
-      if(addSubmission){
+      if (addSubmission) {
         console.log("Submission created!!");
       }
-    }catch(error){
-      console.log(error)
+    } catch (error) {
+      console.log(error);
     }
-
 
     // console.log(submissions)
     // return NextResponse.json({ data: submissions });
@@ -163,98 +162,137 @@ export async function POST(request) {
       }
     );
     const submittedResJson = await submittedRes.json();
+    const tokenToTestCase = {};
+    submittedResJson.map((s, idx) => {
+      tokenToTestCase[s.token] = testcases[idx];
+    });
 
     // step 3: submissin request(GET)
     const data = await requestPolling(submittedResJson);
 
-
-    try{
-      let submissionStatus = "ATTEMPTED"
+    try {
+      let submissionStatus = "ATTEMPTED";
       for (const sub of data) {
         if (sub.status.id === 11) {
           submissionStatus = "RUNTIME ERR";
           break;
-        }else if(sub.status.id === 6){
+        } else if (sub.status.id === 6) {
           submissionStatus = "COMPILATION ERR";
-        }else if(sub.status.id === 3){
+        } else if (sub.status.id === 3) {
           submissionStatus = "ACCEPTED";
         }
       }
 
-      const updateSubmission = await prisma.$transaction(async(tx)=>{
+      const updateSubmission = await prisma.$transaction(async (tx) => {
         const submission = await tx.submission.update({
-          where:{
-            id: submissionId
+          where: {
+            id: submissionId,
           },
-          data:{
-            status: submissionStatus
-          }
-        })
+          data: {
+            status: submissionStatus,
+          },
+        });
         const problemStatus = await tx.problemStatus.findUnique({
           where: {
-            userId_problemId:{
+            userId_problemId: {
               problemId: problemId,
-              userId: userId
-            }
-          }
-        })
-        if(problemStatus.status !== "ACCEPTED"){
+              userId: userId,
+            },
+          },
+        });
+        if (problemStatus.status !== "ACCEPTED") {
           const updateproblemStatus = await tx.problemStatus.update({
             where: {
-              userId_problemId:{
+              userId_problemId: {
                 problemId: problemId,
-                userId: userId
-              }
+                userId: userId,
+              },
             },
-            data:{
-              status: submissionStatus
-            }
-          })
-
+            data: {
+              status: submissionStatus,
+            },
+          });
         }
-  
-        return true;
-      })
 
-      if(updateSubmission){
+        return true;
+      });
+
+      if (updateSubmission) {
         console.log("Submission updated!!");
       }
-    }catch(error){
-      console.log(error)
+    } catch (error) {
+      console.log(error);
     }
     // compilation error
     if (data[0].status.id === 6) {
       return NextResponse.json({
         text: data[0].compile_output,
-        data: data,
+        data: {source_code: code},
         code: 4,
       });
     }
 
     let runTimeError = "";
+    let passedTestCasesCnt = 0;
+    let failedTestCase = {};
     for (const sub of data) {
-      if (sub.status.id === 11) {
+      if (sub.status.id === 3) {
+        passedTestCasesCnt += 1;
+      }
+      else if (sub.status.id === 11 && runTimeError === "") {
         runTimeError = sub.stderr;
-        break;
+        failedTestCase.input = tokenToTestCase[sub.token].input;
+        failedTestCase.expectedOutput = tokenToTestCase[sub.token].output;
       }
     }
-    if (runTimeError)
-      return NextResponse.json({ text: runTimeError, data: data, code: 3 });
+    if (runTimeError) {
+      return NextResponse.json({
+        text: runTimeError,
+        data: {
+          passedTestCasesCnt: passedTestCasesCnt,
+          failedTestCase: failedTestCase,
+          totalTestCases: testcases.length,
+          source_code: code
+        },
+        code: 3,
+      });
+    }
 
     let returnObj = [];
     let wrongAns = false;
     for (const sub of data) {
       if (sub.status.id === 4) {
-        returnObj.push({ status: "wrong", output: sub.stdout });
+        returnObj.push({
+          status: "wrong",
+          output: sub.stdout,
+        });
         wrongAns = true;
       } else {
+        
         returnObj.push({ status: "acc", output: sub.stdout });
+      }
+    }
+
+    if (wrongAns) {
+      for (const sub of data) {
+        if (sub.status.id === 4) {
+          failedTestCase.input = tokenToTestCase[sub.token].input;
+          failedTestCase.expectedOutput = tokenToTestCase[sub.token].output;
+          failedTestCase.output = sub.stdout;
+          break;
+        }
       }
     }
 
     return NextResponse.json({
       text: `${wrongAns ? "Wrong Answer" : "Accepted"}`,
-      data: returnObj,
+      data: {
+        responseObj: returnObj,
+        failedTestCase: failedTestCase,
+        passedTestCasesCnt: passedTestCasesCnt,
+        totalTestCases: testcases.length,
+        source_code: code
+      },
       code: wrongAns ? 2 : 1,
     });
   } catch (error) {
