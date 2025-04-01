@@ -171,15 +171,15 @@ export async function POST(request) {
     const data = await requestPolling(submittedResJson);
 
     try {
-      let submissionStatus = "ATTEMPTED";
+      let submissionStatus = "ACCEPTED";
       for (const sub of data) {
         if (sub.status.id === 11) {
           submissionStatus = "RUNTIME ERR";
           break;
         } else if (sub.status.id === 6) {
           submissionStatus = "COMPILATION ERR";
-        } else if (sub.status.id === 3) {
-          submissionStatus = "ACCEPTED";
+        } else if (sub.status.id === 4) {
+          submissionStatus = "WRONG ANS";
         }
       }
 

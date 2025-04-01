@@ -10,7 +10,7 @@ import React from "react";
 
 const ProblemStatement = ({problemData, executionStatus}) => {
   return (
-    <>
+    <div className="h-full">
       <h2 className="font-bold text-3xl">{problemData?.name}</h2>
       <div className="my-5 flex items-center gap-4">
         <Badge variant={problemData?.difficulty}>
@@ -35,7 +35,7 @@ const ProblemStatement = ({problemData, executionStatus}) => {
         className="mt-3"
         dangerouslySetInnerHTML={{ __html: problemData?.description }}
       />
-    </>
+    </div>
   );
 };
 

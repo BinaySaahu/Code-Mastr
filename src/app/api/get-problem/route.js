@@ -42,12 +42,12 @@ export async function GET(request) {
 
     
 
-    let submissions = await prisma.submission.findMany({
-      where:{
-        problemId:problemId,
-        userId:userId
-      }
-    })
+    // let submissions = await prisma.submission.findMany({
+    //   where:{
+    //     problemId:problemId,
+    //     userId:userId
+    //   }
+    // })
 
     const client = new S3Client({
       region: "ap-south-1",
@@ -88,7 +88,7 @@ export async function GET(request) {
     // console.log(inputsData)
     // console.log(outputsData)
 
-    problem = { ...problem, languages: languages, testcases: testCases, submissions: submissions };
+    problem = { ...problem, languages: languages, testcases: testCases };
     // console.log(problems);
     return NextResponse.json({ problem: problem }, { status: 200 });
   } catch (error) {

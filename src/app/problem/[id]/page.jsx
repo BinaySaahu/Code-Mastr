@@ -325,37 +325,36 @@ const page = ({ params }) => {
         {!problemData ? (
           <ProblemStatementSkeleton />
         ) : (
-          <div className="w-full mr-5">
+          <div className="w-full mr-5 h-full">
             <Tabs
               defaultValue="problem"
               value={tab}
-              className="w-full pb-5 flex flex-col items-center pr-4"
+              className="w-full pb-5 flex flex-col items-center pr-4 h-full"
               onValueChange={(value) => setTab(value)}
             >
               <TabsList className="mb-2">
                 <TabsTrigger value="problem">Problem</TabsTrigger>
                 <TabsTrigger value="submission">Submissions</TabsTrigger>
-                {tab === "submission_status" && <TabsTrigger value="submission_status">Submission status</TabsTrigger>}
+                {(submitStatus !== 0 && submitStatus !== 9) && (
+                  <TabsTrigger value="submission_status">
+                    Submission status
+                  </TabsTrigger>
+                )}
               </TabsList>
-              <TabsContent value="problem" className="w-full">
+              <TabsContent value="problem" className="w-full h-full">
                 <ProblemStatement
                   problemData={problemData}
                   runStatus={runStatus}
                 />
               </TabsContent>
-              <TabsContent value="submission" className="w-full">
-                {!problemData ? (
-                  <ProblemListSkeleton />
-                ) : problemData.submissions.length === 0 ? (
-                  <p className="text-white">No submissions yet</p>
-                ) : (
-                  <Submissions submissions={problemData.submissions} />
-                )}
+              <TabsContent value="submission" className="w-full h-full">
+                <Submissions problemId={problemData.id} />
               </TabsContent>
-              {tab === "submission_status" && <TabsContent value="submission_status" className="w-full">
-                {getSubmissionStatusHTML()}
-              </TabsContent>}
-
+              {(submitStatus !== 0 && submitStatus !== 9) && (
+                <TabsContent value="submission_status" className="w-full">
+                  {getSubmissionStatusHTML()}
+                </TabsContent>
+              )}
             </Tabs>
           </div>
         )}
