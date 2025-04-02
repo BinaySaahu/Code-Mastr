@@ -31,7 +31,7 @@ import ProblemListSkeleton from "./ProblemListSkeleton";
 const ProblemList = () => {
   const [problemList, setProblemList] = useState([]);
   const [pageNum, setPageNum] = useState(1);
-  const [pageProblems, setPageProblems] = useState(null);
+  const [pageProblems, setPageProblems] = useState();
   const [loading, setLoading] = useState(true);
   const USER = useSelector((state) => state.user);
 
@@ -71,13 +71,9 @@ const ProblemList = () => {
   let pages = Math.ceil(problemList.length / 10);
   return (
     <div>
-      {pageProblems === null ? (
+      {!pageProblems? (
         <ProblemListSkeleton/>
       ) : (
-        pageProblems.length == 0?
-        <p className="flex items-center justify-center w-full py-10">Sorry no problem has been added yet</p>
-        :
-
         <>
           <Table>
             {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
@@ -92,7 +88,7 @@ const ProblemList = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {pageProblems?.map((problem, idx) => {
+              {pageProblems.map((problem, idx) => {
                 return (
                   <TableRow key={idx}>
                     <TableCell className="font-medium">{idx+1}</TableCell>
