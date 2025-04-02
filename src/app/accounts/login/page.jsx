@@ -1,3 +1,5 @@
+"use client"
+import isNotAuth from '@/custom-components/utils/isNotAuth'
 import LoginModal from '@/custom-components/LoginModal'
 import React from 'react'
 
@@ -10,4 +12,4 @@ const page = () => {
   )
 }
 
-export default page
+export default isNotAuth(page)

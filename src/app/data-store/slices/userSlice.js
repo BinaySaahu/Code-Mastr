@@ -7,7 +7,8 @@ export const userSlice = createSlice({
     name: "",
     email: "",
     solved:[],
-    admin:false
+    admin:false,
+    token:""
   },
   reducers: {
     addUser: (state,action) => {

@@ -69,7 +69,7 @@ const Submissions = ({ problemId }) => {
     <div className="relative flex justify-center w-full h-full">
       {
       USER.userId === ""?
-      <LoggedOutOverlay/>
+      <LoggedOutOverlay text = "Please Login or Sign up to continue"/>
       :
       (submissions ? (
         submissions.length === 0?

@@ -325,7 +325,7 @@ const page = ({ params }) => {
         {!problemData ? (
           <ProblemStatementSkeleton />
         ) : (
-          <div className="w-full mr-5 h-full">
+          <div className="w-full mr-5 h-full pb-5">
             <Tabs
               defaultValue="problem"
               value={tab}
@@ -341,17 +341,17 @@ const page = ({ params }) => {
                   </TabsTrigger>
                 )}
               </TabsList>
-              <TabsContent value="problem" className="w-full h-full">
+              <TabsContent value="problem" className="w-full h-full pb-5">
                 <ProblemStatement
                   problemData={problemData}
                   runStatus={runStatus}
                 />
               </TabsContent>
-              <TabsContent value="submission" className="w-full h-full">
+              <TabsContent value="submission" className="w-full h-full pb-5">
                 <Submissions problemId={problemData.id} />
               </TabsContent>
               {(submitStatus !== 0 && submitStatus !== 9) && (
-                <TabsContent value="submission_status" className="w-full">
+                <TabsContent value="submission_status" className="w-full pb-5">
                   {getSubmissionStatusHTML()}
                 </TabsContent>
               )}

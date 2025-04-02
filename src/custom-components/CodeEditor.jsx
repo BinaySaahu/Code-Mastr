@@ -37,7 +37,7 @@ const CodeEditor = ({
 
   return (
     <div className="relative">
-      {USER.userId === "" && <LoggedOutOverlay />}
+      {USER.userId === "" && <LoggedOutOverlay text="Please Login or Sign up to continue"/>}
       <div className="border-[#fff]/[50%] border rounded-md p-3">
         <div className="flex justify-between items-center">
           <Select
