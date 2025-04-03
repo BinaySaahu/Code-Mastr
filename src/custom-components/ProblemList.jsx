@@ -23,7 +23,8 @@ import {
 } from "@/components/ui/pagination";
 import Link from "next/link";
 import { useSelector } from "react-redux";
-import { IoCheckmarkDoneCircleOutline } from "react-icons/io5";
+import { MdOutlineDone } from "react-icons/md";
+import { FaCircleNotch } from "react-icons/fa6";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProblemListSkeleton from "./ProblemListSkeleton";
@@ -36,16 +37,17 @@ const ProblemList = () => {
   const USER = useSelector((state) => state.user);
 
   const handlePagination = (page) => {
+    setLoading(true)
     setPageNum(page);
     let start = page * 10 - 10;
     let end = Math.min(start + 10, problemList.length);
     console.log(pageNum + "start->" + start + "end->" + end);
     setPageProblems(problemList.slice(start, end));
-    // setLoading(false);
+    setLoading(false);
   };
   const loadProblems = async () => {
     try {
-      const response = await fetch("/api/problems");
+      const response = await fetch(`/api/problems?userId=${USER.userId}`);
       console.log(response);
       if (!response.ok) {
         throw new Error(`Response status: ${response.status}`);
@@ -60,9 +62,17 @@ const ProblemList = () => {
       setLoading(false);
     }
   };
+
+  const getStatus = (problem)=>{
+    if(problem.status && problem.status === "ACCEPTED"){
+      return <MdOutlineDone size={20} color={"green"}/>;
+    }else if(problem.status && problem.status !== "ACCEPTED"){
+      return <FaCircleNotch size={20} color={"orange"}/>;
+    }else return null
+  }
   useEffect(() => {
     loadProblems();
-  }, []);
+  }, [USER]);
 
   useEffect(() => {
     handlePagination(1);
@@ -88,21 +98,12 @@ const ProblemList = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {pageProblems.map((problem, idx) => {
+              {pageProblems?.map((problem, idx) => {
                 return (
                   <TableRow key={idx}>
                     <TableCell className="font-medium">{idx+1}</TableCell>
                     <TableCell className="font-medium">
-                      {USER.solved?.map((solved, idx) => {
-                        if (solved.id === problem.id)
-                          return (
-                            <IoCheckmarkDoneCircleOutline
-                              key={idx}
-                              color="green"
-                              size={25}
-                            />
-                          );
-                      })}
+                      {getStatus(problem)}
                     </TableCell>
                     <TableCell>{problem.name}</TableCell>
                     <TableCell>

@@ -321,7 +321,7 @@ const page = ({ params }) => {
   return (
     <div className="w-full px-5 h-screen flex">
       {/* problem statement */}
-      <div className="w-1/2 h-screen overflow-scroll py-5 pt-20 px-2">
+      <div className="w-1/2 h-screen overflow-y-scroll overflow-x-hidden py-5 pt-20 px-2">
         {!problemData ? (
           <ProblemStatementSkeleton />
         ) : (
@@ -344,7 +344,7 @@ const page = ({ params }) => {
               <TabsContent value="problem" className="w-full h-full pb-5">
                 <ProblemStatement
                   problemData={problemData}
-                  runStatus={runStatus}
+                  setProblemData = {setProblemData}
                 />
               </TabsContent>
               <TabsContent value="submission" className="w-full h-full pb-5">
@@ -360,7 +360,7 @@ const page = ({ params }) => {
         )}
       </div>
       {/* code editor */}
-      <div className="w-1/2 h-screen overflow-scroll py-5 pt-20">
+      <div className="w-1/2 h-screen overflow-y-scroll py-5 pt-20">
         {!problemData ? (
           <CodeEditorSkeleton />
         ) : (

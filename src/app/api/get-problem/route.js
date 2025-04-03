@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { generateClient } from "@/server/db";
-import { GetObjectCommand, ListObjectsCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  GetObjectCommand,
+  ListObjectsCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
 import { resolve } from "path";
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const problemId = searchParams.get("id");
-  const userId = searchParams.get("userId")
+  const userId = searchParams.get("userId");
   console.log("problemId->", problemId);
   console.log("User id->", userId);
   try {
@@ -40,7 +44,18 @@ export async function GET(request) {
       });
     });
 
-    
+    const solvedProblem = await prisma.problemStatus.findUnique({
+      where: {
+        userId_problemId: {
+          userId: userId,
+          problemId: problemId,
+        },
+      },
+    });
+    let status = "NOT ATTEMPTED";
+    if (solvedProblem) {
+      status = solvedProblem.status;
+    }
 
     // let submissions = await prisma.submission.findMany({
     //   where:{
@@ -60,35 +75,34 @@ export async function GET(request) {
       new ListObjectsCommand({
         Bucket: "code-mstr",
         Prefix: `${problemId}/testcases/testcases/inputs`,
-        MaxKeys: 4
+        MaxKeys: 4,
       })
     );
     let outputs = await client.send(
       new ListObjectsCommand({
         Bucket: "code-mstr",
         Prefix: `${problemId}/testcases/testcases/outputs`,
-        MaxKeys: 4
+        MaxKeys: 4,
       })
     );
-    inputs = inputs.Contents.filter((inp)=>inp.Key.endsWith('.txt'))
-    outputs = outputs.Contents.filter((out)=>out.Key.endsWith('.txt'))
+    inputs = inputs.Contents.filter((inp) => inp.Key.endsWith(".txt"));
+    outputs = outputs.Contents.filter((out) => out.Key.endsWith(".txt"));
 
-    const inputsData = await getData(inputs,client)
-    const outputsData = await getData(outputs, client)
+    const inputsData = await getData(inputs, client);
+    const outputsData = await getData(outputs, client);
 
-    const testCases = []
+    const testCases = [];
 
     for (let index = 0; index < inputsData.length; index++) {
       const inp = inputsData[index];
       const out = outputsData[index];
-      testCases.push({input: inp, output: out});
-      
+      testCases.push({ input: inp, output: out });
     }
 
     // console.log(inputsData)
     // console.log(outputsData)
 
-    problem = { ...problem, languages: languages, testcases: testCases };
+    problem = { ...problem, languages: languages, testcases: testCases, status: status };
     // console.log(problems);
     return NextResponse.json({ problem: problem }, { status: 200 });
   } catch (error) {
@@ -99,13 +113,13 @@ export async function GET(request) {
     );
   }
 }
-const getObjectFromBucket = async(client, key)=>{
+const getObjectFromBucket = async (client, key) => {
   const info = await client.send(
     new GetObjectCommand({
-      Bucket: 'code-mstr',
-      Key: key
+      Bucket: "code-mstr",
+      Key: key,
     })
-  )
+  );
   const streamToString = (stream) =>
     new Promise((resolve, reject) => {
       const chunks = [];
@@ -114,18 +128,16 @@ const getObjectFromBucket = async(client, key)=>{
       stream.on("error", reject);
     });
   const fileContent = await streamToString(info.Body);
-  return fileContent
-}
+  return fileContent;
+};
 
-
-const getData = async (content, client)=>{
+const getData = async (content, client) => {
   let data = [];
   for (let index = 0; index < content.length; index++) {
     const item = content[index];
-    const info = await getObjectFromBucket(client, item.Key)
+    const info = await getObjectFromBucket(client, item.Key);
     // console.log(fileContent)
-    data.push(info)  
+    data.push(info);
   }
   return data;
-
-}
+};
