@@ -1,4 +1,4 @@
-const generateJSMain = (inputs, functionName) => {
+export const generateJSMain = (inputs, functionName) => {
   let actualInputsCode = [];
   let inpCnt = 1;
   let arrCnt = 1;
@@ -34,4 +34,4 @@ const generateJSMain = (inputs, functionName) => {
     .join(",")});\nconsole.log(ans);`;
 };
 
-module.exports.generateJSMain = generateJSMain
+// module.exports.generateJSMain = generateJSMain

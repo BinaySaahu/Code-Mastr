@@ -1,4 +1,4 @@
-const generateJSFunction = (inputs, functionName) => {
+export const generateJSFunction = (inputs, functionName) => {
   let actualInputFields = inputs.map((inp) => inp.split(" ")[1]);
 
   let code = `function ${functionName}(${actualInputFields.map((inp) => {
@@ -9,4 +9,4 @@ const generateJSFunction = (inputs, functionName) => {
 };
 
 
-module.exports.generateJSFunction = generateJSFunction
+// module.exports.generateJSFunction = generateJSFunction

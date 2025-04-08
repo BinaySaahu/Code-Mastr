@@ -1,6 +1,6 @@
 const { allDataTypes } = require("./datatypes");
 
-const mapCppType = (str) => {
+export const mapCppType = (str) => {
   const s = str.split(" ")[0];
   for (let index = 0; index < allDataTypes.length; index++) {
     const element = allDataTypes[index];
@@ -11,4 +11,4 @@ const mapCppType = (str) => {
   return s;
 };
 
-module.exports.mapCppType = mapCppType
+// module.exports.mapCppType = mapCppType

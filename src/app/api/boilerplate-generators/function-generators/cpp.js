@@ -1,7 +1,7 @@
 const { convertToActualInputs } = require("../helpers/cpp/actual-inputs");
 const { mapCppType } = require("../helpers/cpp/datatype-mapping");
 
-const generateCppFunction = (inputs, functionName, output) => {
+export const generateCppFunction = (inputs, functionName, output) => {
   let actualInputFields = convertToActualInputs(inputs);
 
   let actualOutput = mapCppType(output);
@@ -15,4 +15,4 @@ const generateCppFunction = (inputs, functionName, output) => {
   return code;
 };
 
-module.exports.generateCppFunction = generateCppFunction
+// module.exports.generateCppFunction = generateCppFunction

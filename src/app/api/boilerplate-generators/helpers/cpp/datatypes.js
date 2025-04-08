@@ -1,4 +1,4 @@
-const allDataTypes = [
+export const allDataTypes = [
   "int",
   "long long",
   "float",
@@ -8,4 +8,4 @@ const allDataTypes = [
   "string",
 ];
 
-module.exports.allDataTypes = allDataTypes
+// module.exports.allDataTypes = allDataTypes

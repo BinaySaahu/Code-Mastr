@@ -1,6 +1,6 @@
 const { convertToActualInputs } = require("../helpers/cpp/actual-inputs");
 
-const generateCppMain = (inputs, functionName, output) => {
+export const generateCppMain = (inputs, functionName, output) => {
   let actualInputFields = convertToActualInputs(inputs);
 
   const code = `int main(){\n${actualInputFields
@@ -43,4 +43,4 @@ const generateCppMain = (inputs, functionName, output) => {
   return code;
 };
 
-module.exports.generateCppMain = generateCppMain
+// module.exports.generateCppMain = generateCppMain

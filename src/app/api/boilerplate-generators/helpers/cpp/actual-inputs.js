@@ -3,7 +3,7 @@
 const { mapCppType } = require("./datatype-mapping");
 const { allDataTypes } = require("./datatypes");
 
-const convertToActualInputs = (inputs) => {
+export const convertToActualInputs = (inputs) => {
   // console.log("Inputs",inputs)
   let actualInputFields = [];
   inputs.map((input, idx) => {
@@ -19,4 +19,4 @@ const convertToActualInputs = (inputs) => {
   return actualInputFields;
 };
 
-module.exports.convertToActualInputs = convertToActualInputs
+// module.exports.convertToActualInputs = convertToActualInputs
