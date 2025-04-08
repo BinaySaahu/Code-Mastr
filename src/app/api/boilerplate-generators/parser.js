@@ -1,4 +1,4 @@
-function parser(data){
+export function parser(data){
   // const data = fs.readFileSync("./structure.md", "utf8");
   const lines = data.split("\n");
   let inputs = [];
@@ -33,6 +33,6 @@ function parser(data){
   
 };
 
-module.exports.parser = parser
+// module.exports.parser = parser
 
 // parser();
