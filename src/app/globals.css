@@ -27,6 +27,20 @@ input:-internal-autofill-selected {
   background-color: transparent !important;
   color: fieldtext !important;
 }
+.lottie-animation-dialog button{
+  display: none;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
 @layer base {
   :root {
     --background: 0 0% 100%;

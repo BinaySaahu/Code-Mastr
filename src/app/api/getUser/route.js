@@ -18,10 +18,10 @@ export async function GET(request) {
     const prisma = generateClient();
     console.log("Recieved a user request");
     let user = await prisma.user.findUnique({where:{email:decodedToken.id}});
-    const solved = await prisma.user.findUnique({
-      where:{email: decodedToken.id}
-    }).solved();
-    user = {...user,solved:solved}
+    // const solved = await prisma.user.findUnique({
+    //   where:{email: decodedToken.id}
+    // }).solved();
+    // user = {...user,solved:solved}
     // console.log(user);
     return NextResponse.json({user:user, text:"User retrieved successfully"},{status: 200});
   } catch (error) {
