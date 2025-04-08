@@ -12,10 +12,10 @@ export default function RootLayout({ children }) {
   return (
     <Provider store={store}>
       <html lang="en">
-        <head>
+        {/* <head>
           <link rel="icon" href="logo-transparent.png" type="image/png" />
           <title>Code master</title>
-        </head>
+        </head> */}
         <body className="dark">
           {" "}
           {/* You can conditionally add "dark" class here based on user preference */}
