@@ -10,6 +10,7 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "lucide-react";
 import { getSession, signOut, useSession } from "next-auth/react";
@@ -18,7 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
-  { name: "Contests", href: "/contest", current: false },
+  // { name: "Contests", href: "/contest", current: false },
   //   { name: 'Projects', href: '#', current: false },
   //   { name: 'Calendar', href: '#', current: false },
 ];
@@ -37,10 +38,12 @@ export default function NavBar() {
   const dispatch = useDispatch();
   const loadUser = async () => {
     try {
-      const response = await fetch(`/api/getUser/?token=${localStorage.getItem('token')}`);
+      const response = await fetch(
+        `/api/getUser/?token=${localStorage.getItem("token")}`
+      );
       const json = await response.json();
-      console.log(response.status)
-      if(json.status === 401){
+      console.log(response.status);
+      if (json.status === 401) {
         logout();
         return;
       }
@@ -53,23 +56,32 @@ export default function NavBar() {
     } catch (error) {
       console.log(error);
       alert(error.message);
-
     }
   };
 
-  const getData = async () => {
-    const session = await getSession();
-    console.log(session);
-  };
+  const getInitials = (name)=>{
+    const words = name.split(' ');
+
+    if(words.length === 1){
+      return words[0][0] + words[0][1]
+    }else{
+      return words[0][0] + words[words.length-1][0]
+    }
+  }
+
+  // const getData = async () => {
+  //   const session = await getSession();
+  //   console.log(session);
+  // };
   const logout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     window.location.reload();
   };
   useEffect(() => {
-    getData();
-    let token = localStorage.getItem("token")
-    if(token) {
+    // getData();
+    let token = localStorage.getItem("token");
+    if (token) {
       loadUser();
     }
   }, []);
@@ -102,7 +114,7 @@ export default function NavBar() {
             <div className="flex shrink-0 items-center">
               <img
                 alt="Your Company"
-                src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
+                src="logo-transparent.png"
                 className="h-8 w-auto"
               />
             </div>
@@ -140,18 +152,22 @@ export default function NavBar() {
                   <MenuButton className="relative flex rounded-full bg-[#343333] text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                     <span className="absolute -inset-1.5" />
                     <span className="sr-only">Open user menu</span>
-                    <img
+                    {/* <img
                       alt=""
                       src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                       className="size-8 rounded-full"
-                    />
+                    /> */}
+                    <Avatar>
+                      <AvatarImage src="https://github.com/shadcn.png" />
+                      <AvatarFallback>{getInitials(USER.name)}</AvatarFallback>
+                    </Avatar>
                   </MenuButton>
                 </div>
                 <MenuItems
                   transition
                   className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
                 >
-                  <MenuItem>
+                  {/* <MenuItem>
                     <a
                       href="#"
                       className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
@@ -166,7 +182,7 @@ export default function NavBar() {
                     >
                       Settings
                     </a>
-                  </MenuItem>
+                  </MenuItem> */}
                   <MenuItem>
                     <p
                       onClick={logout}

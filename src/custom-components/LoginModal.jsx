@@ -86,7 +86,7 @@ const LoginModal = () => {
             Please login using your email and password
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex items-center justify-center gap-6">
+        {/* <CardContent className="flex items-center justify-center gap-6">
           <FaGoogle
             size={20}
             className="cursor-pointer"
@@ -94,12 +94,12 @@ const LoginModal = () => {
           />
           <FaGithub size={20} className="cursor-pointer" />
           <FaFacebook size={20} className="cursor-pointer" />
-        </CardContent>
-        <div className="flex items-center mb-4">
+        </CardContent> */}
+        {/* <div className="flex items-center mb-4">
           <div className="h-[0.5px] bg-gradient-to-r from-slate-300/[10%] to-slate-300/[50%] w-full"></div>
           or
           <div className="h-[0.5px] bg-gradient-to-l from-slate-300/[10%] to-slate-300/[50%] w-full"></div>
-        </div>
+        </div> */}
         <form onSubmit={handleSubmit(submit)}>
           <CardContent className="flex flex-col items-center justify-center gap-4">
             <div className="w-full">
