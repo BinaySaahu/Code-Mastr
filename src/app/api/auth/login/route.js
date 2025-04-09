@@ -19,22 +19,22 @@ export async function POST(request) {
       if (user) {
         const checkedPassword = await bcrypt.compare(password, user.password);
         if (checkedPassword) {
-          // const cookie = await cookies();
+          const cookie = await cookies();
           const token = jwt.sign({ id: user.email }, process.env.SECRET_KEY,{
             expiresIn: '5h'
           });
-          // const session = cookie.set({
-          //   name: "auth",
-          //   value: token,
-          //   expires: Date.now() + 60 * 60 * 24,
-          //   secure: true,
-          // });
-          // const solved = await prisma.user
-          //   .findUnique({
-          //     where: { id: user.id },
-          //   })
-          //   .solved();
-          // user = { ...user, solved: solved };
+          const session = cookie.set({
+            name: "auth",
+            value: token,
+            expires: Date.now() + 60 * 60 * 24,
+            secure: true,
+          });
+          const solved = await prisma.user
+            .findUnique({
+              where: { id: user.id },
+            })
+            .solved();
+          user = { ...user, solved: solved };
           return NextResponse.json({
             text: "User Logged in successfully",
             user: user,

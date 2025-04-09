@@ -5,8 +5,7 @@ import NavBar from "@/custom-components/NavBar";
 import { Provider } from "react-redux";
 import store from "./data-store/store";
 import { SessionProvider } from "next-auth/react";
-import { Toaster } from "@/components/ui/sonner";
-import logo from "@/assets/logo-transparent.png";
+import { Toaster } from "@/components/ui/sonner"
 
 export default function RootLayout({ children }) {
   return (

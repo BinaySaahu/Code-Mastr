@@ -12,18 +12,13 @@ import {
 } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Link } from "lucide-react";
-import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { getSession, signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { toast } from "sonner";
-import Lottie from "lottie-react";
-import Image from "next/image";
-import logo from "@/assets/logo-transparent.png";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
-  // { name: "Contests", href: "/contest", current: false },
+  { name: "Contests", href: "/contest", current: false },
   //   { name: 'Projects', href: '#', current: false },
   //   { name: 'Calendar', href: '#', current: false },
 ];
@@ -34,21 +29,18 @@ function classNames(...classes) {
 
 export default function NavBar() {
   const [path, setPath] = useState("/");
-  // const { data:session } = useSession();
+  const { status } = useSession();
 
   const USER = useSelector((state) => state.user);
-  const router = useRouter();
 
   const [userData, setUserData] = useState(null);
   const dispatch = useDispatch();
   const loadUser = async () => {
     try {
-      const response = await fetch(
-        `/api/getUser/?token=${localStorage.getItem("token")}`
-      );
+      const response = await fetch(`/api/getUser/?token=${localStorage.getItem('token')}`);
       const json = await response.json();
-      console.log(response.status);
-      if (json.status === 401) {
+      console.log(response.status)
+      if(json.status === 401){
         logout();
         return;
       }
@@ -60,26 +52,29 @@ export default function NavBar() {
       setUserData(json);
     } catch (error) {
       console.log(error);
-      toast(error.message);
+      alert(error.message);
+
     }
+  };
+
+  const getData = async () => {
+    const session = await getSession();
+    console.log(session);
   };
   const logout = () => {
-    // toast("User logged out/ token expired")
-    signOut();
-    // signOut({
-    //   redirect: true,
-    //   callbackUrl: "/",
-    // });
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    router.refresh();
+    window.location.reload();
   };
   useEffect(() => {
-    setPath(window.location.pathname);
-    let token = localStorage.getItem("token");
-    if (token) {
+    getData();
+    let token = localStorage.getItem("token")
+    if(token) {
       loadUser();
     }
+  }, []);
+  useEffect(() => {
+    setPath(window.location.pathname);
   }, []);
   return (
     <Disclosure
@@ -103,14 +98,13 @@ export default function NavBar() {
               />
             </DisclosureButton>
           </div>
-          <div className="flex flex-1 items-center justify-center sm:items-center sm:justify-start">
+          <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex shrink-0 items-center">
-              {/* <img
+              <img
                 alt="Your Company"
                 src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
                 className="h-8 w-auto"
-              /> */}
-              <Image src={logo} height={30} width={30} alt="Company logo" />
+              />
             </div>
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
@@ -135,7 +129,9 @@ export default function NavBar() {
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             {USER.admin && (
               <a href="/add-problem">
-                <Button variant="default">Add problem</Button>
+                <Button variant="default" onClick={() => signOut()}>
+                  Add problem
+                </Button>
               </a>
             )}
             {USER.email ? (
@@ -155,22 +151,22 @@ export default function NavBar() {
                   transition
                   className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
                 >
-                  {/* <MenuItem>
+                  <MenuItem>
                     <a
                       href="#"
                       className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
                     >
                       Your Profile
                     </a>
-                  </MenuItem> */}
-                  {/* <MenuItem>
+                  </MenuItem>
+                  <MenuItem>
                     <a
                       href="#"
                       className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
                     >
                       Settings
                     </a>
-                  </MenuItem> */}
+                  </MenuItem>
                   <MenuItem>
                     <p
                       onClick={logout}
@@ -190,9 +186,6 @@ export default function NavBar() {
               </a>
             )}
           </div>
-          {/* <p href="#" className="ml-4 text-base cursor-pointer" onClick={logout}>
-            Logout
-          </p> */}
         </div>
       </div>
 
