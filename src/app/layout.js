@@ -10,22 +10,16 @@ import logo from "@/assets/logo-transparent.png";
 
 export default function RootLayout({ children }) {
   return (
-    <Provider store={store}>
-      <html lang="en">
-        {/* <head>
-          <link rel="icon" href="logo-transparent.png" type="image/png" />
-          <title>Code master</title>
-        </head> */}
-        <body className="dark">
-          {" "}
-          {/* You can conditionally add "dark" class here based on user preference */}
-          <SessionProvider>
+    <SessionProvider>
+      <Provider store={store}>
+        <html lang="en">
+          <body className={`dark`}>
             <NavBar />
             {children}
-            <Toaster />
-          </SessionProvider>
-        </body>
-      </html>
-    </Provider>
+            <Toaster/>
+          </body>
+        </html>
+      </Provider>
+    </SessionProvider>
   );
 }
