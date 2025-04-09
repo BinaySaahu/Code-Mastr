@@ -37,7 +37,7 @@ const LoginModal = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false)
-  const { data: session, status } = useSession();
+  // const { data: session, status } = useSession();
 
   const USER = useSelector((state) => state.user);
 
@@ -97,15 +97,15 @@ const LoginModal = () => {
     }
   };
 
-  const handleGoogleSignIn = async() => {
-    if (status !== "authenticated") {
-      const res = await signIn("google");  // Trigger Google sign-in only when the user is not already authenticated
-      console.log("Google response->",res)
-      router.back()
-      // router.push('/')
-      // if(!res) googleLogin()
-    }
-  };
+  // const handleGoogleSignIn = async() => {
+  //   if (status !== "authenticated") {
+  //     const res = await signIn("google");  // Trigger Google sign-in only when the user is not already authenticated
+  //     console.log("Google response->",res)
+  //     router.back()
+  //     // router.push('/')
+  //     // if(!res) googleLogin()
+  //   }
+  // };
 
   // UseEffect to handle session changes and make API call after Google sign-in
   // useEffect(() => {
@@ -133,7 +133,7 @@ const LoginModal = () => {
           <FaGithub size={20} className="cursor-pointer" />
           <FaFacebook size={20} className="cursor-pointer" />
         </CardContent> */}
-        <Dialog className="" open = {open}>
+        {/* <Dialog className="" open = {open}>
           <DialogContent className = "lottie-animation-dialog flex items-center justify-center w-fit">
             
             <DialogTitle className = "visually-hidden">Google Auth Loading Animation</DialogTitle>
@@ -143,7 +143,7 @@ const LoginModal = () => {
               style={{ width: 400, height: 400 }}
             />
           </DialogContent>
-        </Dialog>
+        </Dialog> */}
         {/* <div className="flex items-center mb-4">
           <div className="h-[0.5px] bg-gradient-to-r from-slate-300/[10%] to-slate-300/[50%] w-full"></div>
           or
