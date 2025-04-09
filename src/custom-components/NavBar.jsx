@@ -12,10 +12,11 @@ import {
 } from "@headlessui/react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Link } from "lucide-react";
+
 import { getSession, signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Link from "next/link";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
@@ -194,12 +195,12 @@ export default function NavBar() {
                 </MenuItems>
               </Menu>
             ) : (
-              <a
+              <Link
                 href="/accounts/login"
                 className="ml-4 text-base cursor-pointer"
               >
                 Login/Signup
-              </a>
+              </Link>
             )}
           </div>
         </div>
