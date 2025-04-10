@@ -22,8 +22,9 @@ import { addUser, setToken } from "@/app/data-store/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import Lottie from "lottie-react";
-import googleAuthLoading from '../../public/googleAuthLoading.json'
+import dynamic from "next/dynamic";
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+// import googleAuthLoading from '../../public/googleAuthLoading.json'
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 const LoginModal = () => {
@@ -36,7 +37,8 @@ const LoginModal = () => {
   // const { push } = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
+  const [animationData, setAnimationData] = useState(null);
   const router = useRouter();
 
   const { data: session, status } = useSession();
@@ -68,15 +70,11 @@ const LoginModal = () => {
     }
   };
 
-  // const handleGoogleSignIn = async() => {
-  //   if (status !== "authenticated") {
-  //     const res = await signIn("google");  // Trigger Google sign-in only when the user is not already authenticated
-  //     console.log("Google response->",res)
-  //     router.back()
-  //     // router.push('/')
-  //     // if(!res) googleLogin()
-  //   }
-  // };
+  useEffect(() => {
+    import("../../public/googleAuthLoading.json").then((data) => {
+      setAnimationData(data.default || data);
+    });
+  }, []);
 
   const googleLogin = async () => {
     setOpen(true);
@@ -98,7 +96,7 @@ const LoginModal = () => {
       dispatch(addUser(json.user));
       dispatch(setToken(json.token));
       // router.back();
-      router.push('/')
+      router.push("/");
       setOpen(false);
     } catch (error) {
       console.log(error);
@@ -107,7 +105,7 @@ const LoginModal = () => {
     }
 
     // const res = await
-    setOpen(false)
+    setOpen(false);
   };
 
   const handleGoogleLogin = () => {
@@ -152,11 +150,13 @@ const LoginModal = () => {
             <DialogTitle className="visually-hidden hidden">
               Google Auth Loading Animation
             </DialogTitle>
-            <Lottie
-              animationData={googleAuthLoading}
-              loop={true}
-              style={{ width: 400, height: 400 }}
-            />
+            {animationData && (
+              <Lottie
+                animationData={animationData}
+                loop={true}
+                style={{ width: 400, height: 400 }}
+              />
+            )}
           </DialogContent>
         </Dialog>
         <div className="flex items-center mb-4">
