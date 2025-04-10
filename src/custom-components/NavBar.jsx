@@ -17,6 +17,7 @@ import { getSession, signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
@@ -31,7 +32,8 @@ function classNames(...classes) {
 
 export default function NavBar() {
   const [path, setPath] = useState("/");
-  const { status } = useSession();
+  // const { status } = useSession();
+  const router = useRouter();
 
   const USER = useSelector((state) => state.user);
 
@@ -60,24 +62,25 @@ export default function NavBar() {
     }
   };
 
-  const getInitials = (name)=>{
-    const words = name.split(' ');
+  const getInitials = (name) => {
+    const words = name.split(" ");
 
-    if(words.length === 1){
-      return words[0][0] + words[0][1]
-    }else{
-      return words[0][0] + words[words.length-1][0]
+    if (words.length === 1) {
+      return words[0][0] + words[0][1];
+    } else {
+      return words[0][0] + words[words.length - 1][0];
     }
-  }
+  };
 
   // const getData = async () => {
   //   const session = await getSession();
   //   console.log(session);
   // };
   const logout = () => {
+    signOut();
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    window.location.reload();
+    router.refresh();
   };
   useEffect(() => {
     // getData();
@@ -115,7 +118,7 @@ export default function NavBar() {
             <div className="flex shrink-0 items-center">
               <img
                 alt="Your Company"
-                src="logo-transparent.png"
+                src="/logo-transparent.png"
                 className="h-8 w-auto"
               />
             </div>
@@ -203,6 +206,12 @@ export default function NavBar() {
               </Link>
             )}
           </div>
+          {/* <p
+            onClick={logout}
+            className="ml-4 text-base cursor-pointer"
+          >
+            Logout
+          </p> */}
         </div>
       </div>
 
