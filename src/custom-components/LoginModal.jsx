@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -15,12 +15,17 @@ import { FaGoogle } from "react-icons/fa";
 import { FaGithub } from "react-icons/fa";
 import { FaFacebook } from "react-icons/fa";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { addUser, setToken } from "@/app/data-store/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import dynamic from "next/dynamic";
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+// import googleAuthLoading from '../../public/googleAuthLoading.json'
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 const LoginModal = () => {
   const {
@@ -29,12 +34,17 @@ const LoginModal = () => {
     formState: { errors },
   } = useForm();
   const dispatch = useDispatch();
-  const { push } = useRouter();
+  // const { push } = useRouter();
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [animationData, setAnimationData] = useState(null);
+  const router = useRouter();
+
+  const { data: session, status } = useSession();
 
   const submit = async (data) => {
-    setLoading(true)
+    setLoading(true);
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
@@ -44,31 +54,71 @@ const LoginModal = () => {
         body: JSON.stringify(data),
       });
       const json = await res.json();
-      console.log(json)
+      console.log(json);
       if (!res.ok) {
         throw new Error(json.text);
       }
-      
+
       dispatch(addUser(json.user));
       dispatch(setToken(json.token));
-      setLoading(false)
-      push("/");
+      setLoading(false);
+      router.push("/");
     } catch (error) {
       setError(error.message);
       console.log(error);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
-  // const handleGoogleSignIn = async() => {
-  //   if (status !== "authenticated") {
-  //     const res = await signIn("google");  // Trigger Google sign-in only when the user is not already authenticated
-  //     console.log("Google response->",res)
-  //     router.back()
-  //     // router.push('/')
-  //     // if(!res) googleLogin()
-  //   }
-  // };
+  useEffect(() => {
+    import("../../public/googleAuthLoading.json").then((data) => {
+      setAnimationData(data.default || data);
+    });
+  }, []);
+
+  const googleLogin = async () => {
+    setOpen(true);
+    console.log("Api called");
+    try {
+      const userDataObj = {
+        name: session.user.name,
+        email: session.user.email,
+        password: "1234",
+      };
+      const response = await fetch("/api/auth/google-auth", {
+        method: "POST",
+        body: JSON.stringify(userDataObj),
+      });
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      const json = await response.json();
+      dispatch(addUser(json.user));
+      dispatch(setToken(json.token));
+      // router.back();
+      router.push("/");
+      setOpen(false);
+    } catch (error) {
+      console.log(error);
+      toast("Error during google login");
+      setOpen(false);
+    }
+
+    // const res = await
+    setOpen(false);
+  };
+
+  const handleGoogleLogin = () => {
+    if (status !== "authenticated") {
+      signIn("google");
+    }
+  };
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      googleLogin();
+    }
+  }, [session]);
 
   // UseEffect to handle session changes and make API call after Google sign-in
   // useEffect(() => {
@@ -86,20 +136,34 @@ const LoginModal = () => {
             Please login using your email and password
           </CardDescription>
         </CardHeader>
-        {/* <CardContent className="flex items-center justify-center gap-6">
+        <CardContent className="flex items-center justify-center gap-6">
           <FaGoogle
             size={20}
             className="cursor-pointer"
-            onClick={() => signIn("google")}
+            onClick={handleGoogleLogin}
           />
           <FaGithub size={20} className="cursor-pointer" />
           <FaFacebook size={20} className="cursor-pointer" />
-        </CardContent> */}
-        {/* <div className="flex items-center mb-4">
+        </CardContent>
+        <Dialog className="" open={open}>
+          <DialogContent className="lottie-animation-dialog flex items-center justify-center w-fit">
+            <DialogTitle className="visually-hidden hidden">
+              Google Auth Loading Animation
+            </DialogTitle>
+            {animationData && (
+              <Lottie
+                animationData={animationData}
+                loop={true}
+                style={{ width: 400, height: 400 }}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+        <div className="flex items-center mb-4">
           <div className="h-[0.5px] bg-gradient-to-r from-slate-300/[10%] to-slate-300/[50%] w-full"></div>
           or
           <div className="h-[0.5px] bg-gradient-to-l from-slate-300/[10%] to-slate-300/[50%] w-full"></div>
-        </div> */}
+        </div>
         <form onSubmit={handleSubmit(submit)}>
           <CardContent className="flex flex-col items-center justify-center gap-4">
             <div className="w-full">
@@ -128,16 +192,16 @@ const LoginModal = () => {
             </div>
           </CardContent>
           <CardFooter className="flex flex-col items-center justify-center gap-4">
-            {
-              loading?
+            {loading ? (
               <Button disabled className="w-full">
-                <Loader2 className="animate-spin"/>Logging in
+                <Loader2 className="animate-spin" />
+                Logging in
               </Button>
-              :
+            ) : (
               <Button type="submit" className="w-full">
                 Login
               </Button>
-            }
+            )}
             {error && (
               <p className="text-red-600 w-full text-center mt-1 text-xs">
                 {error}
