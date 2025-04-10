@@ -142,8 +142,8 @@ const LoginModal = () => {
             className="cursor-pointer"
             onClick={handleGoogleLogin}
           />
-          <FaGithub size={20} className="cursor-pointer" />
-          <FaFacebook size={20} className="cursor-pointer" />
+          {/* <FaGithub size={20} className="cursor-pointer" />
+          <FaFacebook size={20} className="cursor-pointer" /> */}
         </CardContent>
         <Dialog className="" open={open}>
           <DialogContent className="lottie-animation-dialog flex items-center justify-center w-fit">
