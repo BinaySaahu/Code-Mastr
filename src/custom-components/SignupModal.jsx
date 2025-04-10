@@ -58,7 +58,7 @@ const SignupModal = () => {
       dispatch(addUser(data.user));
       dispatch(setToken(data.token));
       setLoading(false);
-      router.push("/");
+      router.back();
       console.log(data);
     } catch (error) {
       setError(error.message);

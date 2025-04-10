@@ -62,7 +62,7 @@ const LoginModal = () => {
       dispatch(addUser(json.user));
       dispatch(setToken(json.token));
       setLoading(false);
-      router.push("/");
+      router.back();
     } catch (error) {
       setError(error.message);
       console.log(error);
