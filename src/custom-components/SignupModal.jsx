@@ -19,8 +19,9 @@ import { addUser, setToken } from "@/app/data-store/slices/userSlice";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import Lottie from "lottie-react";
-import googleAuthLoading from '../../public/googleAuthLoading.json'
+import dynamic from "next/dynamic";
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+// import googleAuthLoading from '../../public/googleAuthLoading.json'
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 const SignupModal = () => {
@@ -31,10 +32,11 @@ const SignupModal = () => {
   } = useForm();
   const dispatch = useDispatch();
   const router = useRouter();
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   const { data: session, status } = useSession();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [animationData, setAnimationData] = useState(null);
 
   const submit = async (userData) => {
     console.log("User data->", userData);
@@ -97,6 +99,12 @@ const SignupModal = () => {
     setOpen(false);
   };
 
+  useEffect(() => {
+    import("../../public/googleAuthLoading.json").then((data) => {
+      setAnimationData(data.default || data);
+    });
+  }, []);
+
   const handleGoogleLogin = () => {
     if (status !== "authenticated") {
       signIn("google");
@@ -129,11 +137,13 @@ const SignupModal = () => {
             <DialogTitle className="visually-hidden hidden">
               Google Auth Loading Animation
             </DialogTitle>
-            <Lottie
-              animationData={googleAuthLoading}
-              loop={true}
-              style={{ width: 400, height: 400 }}
-            />
+            {animationData && (
+              <Lottie
+                animationData={animationData}
+                loop={true}
+                style={{ width: 400, height: 400 }}
+              />
+            )}
           </DialogContent>
         </Dialog>
         <div className="flex items-center mb-4">
