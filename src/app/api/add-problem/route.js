@@ -38,6 +38,8 @@ export async function POST(request) {
       !data.desc ||
       !data.topics ||
       !data.difficulty ||
+      !data.mem_limit ||
+      !data.time_limit ||
       !solutions ||
       !testcases ||
       !structure
@@ -53,6 +55,8 @@ export async function POST(request) {
       description: data.desc,
       topics: data.topics,
       difficulty: data.difficulty,
+      memoryLimit: Number(data.mem_limit),
+      timeLimit: Number(data.time_limit),
     };
 
     var extractedSolutions = new AdmZip(solutions);
@@ -127,16 +131,16 @@ export async function POST(request) {
         const { inputs, functionName, output } = parser(fileContent);
 
         const cppFunction = generateCppFunction(inputs, functionName, output);
-        const jsFunction = generateJSFunction(inputs, functionName);
-        const pyFunction = generatePyFunction(inputs, functionName);
+        // const jsFunction = generateJSFunction(inputs, functionName);
+        // const pyFunction = generatePyFunction(inputs, functionName);
 
-        const jsFunctionAdd = await tx.LanguageOnProblem.create({
-          data: {
-            problemId,
-            languageId: 102,
-            boilerplateCode: jsFunction,
-          },
-        });
+        // const jsFunctionAdd = await tx.LanguageOnProblem.create({
+        //   data: {
+        //     problemId,
+        //     languageId: 102,
+        //     boilerplateCode: jsFunction,
+        //   },
+        // });
         const cppFunctionAdd = await tx.LanguageOnProblem.create({
           data: {
             problemId,
@@ -144,13 +148,13 @@ export async function POST(request) {
             boilerplateCode: cppFunction,
           },
         });
-        const pyFunctionAdd = await tx.LanguageOnProblem.create({
-          data: {
-            problemId,
-            languageId: 100,
-            boilerplateCode: pyFunction,
-          },
-        });
+        // const pyFunctionAdd = await tx.LanguageOnProblem.create({
+        //   data: {
+        //     problemId,
+        //     languageId: 100,
+        //     boilerplateCode: pyFunction,
+        //   },
+        // });
         return true;
       });
       if (result) {

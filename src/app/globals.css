@@ -113,3 +113,8 @@ p{
     @apply bg-background text-foreground;
   }
 }
+
+.tiptap{
+  max-height: 156px;
+  overflow-y: scroll;
+}

@@ -84,6 +84,8 @@ const page = () => {
       !data.desc ||
       !data.topics ||
       !data.difficulty ||
+      !data.mem_limit ||
+      !data.time_limit ||
       !solutions ||
       !tests ||
       !structure
@@ -117,11 +119,11 @@ const page = () => {
   return (
     <>
       {USER.userId === "" ? (
-        <div className="relative w-full flex items-center justify-center pt-20 h-screen">
+        <div className={`relative w-full flex items-center justify-center pt-20 h-screen`}>
           <Loader2 className="animate-spin"/>Loading...
         </div>
       ) : (
-        <div className="relative w-full flex items-center justify-center pt-20 h-screen">
+        <div className={`relative w-full flex items-center justify-center pt-20 ${!USER.admin ? "h-screen": "h-full"}`}>
           {!USER.admin && (
             <LoggedOutOverlay text="You are not authorized to access this,<br/> you need admin credentials to access this" />
           )}
@@ -161,6 +163,19 @@ const page = () => {
                   setSelected={setTopics}
                   TOPICS={TOPICS}
                 />
+                <div className="flex items-center gap-3 w-full">
+                  <Input
+                    type="text"
+                    placeholder="Memory limit (in seconds)"
+                    {...register("mem_limit")}
+                  />
+                  <Input
+                    type="text"
+                    placeholder="Time limit (in KB)"
+                    {...register("time_limit")}
+                  />
+
+                </div>
                 <div className="grid grid-cols-2 gap-2 w-full">
                   <div
                     className="bg-transparent rounded-lg flex items-center border w-full p-4 gap-3 cursor-pointer"
