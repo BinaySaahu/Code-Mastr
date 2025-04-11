@@ -10,8 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  // url      = env("DATABASE_URL_DEV")
-  url      = env("DATABASE_URL_PROD")
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -38,6 +37,8 @@ model Problem {
   id            String                 @id @default(uuid())
   name          String
   description   String
+  memoryLimit   Int
+  timeLimit     Float
   difficulty    String
   topics        String[]
   User          User[]

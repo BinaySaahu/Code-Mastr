@@ -22,7 +22,7 @@ CREATE TABLE "Language" (
 
 -- CreateTable
 CREATE TABLE "Problem" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "difficulty" TEXT NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE "Problem" (
 CREATE TABLE "Submission" (
     "id" SERIAL NOT NULL,
     "userId" TEXT NOT NULL,
-    "problemId" INTEGER NOT NULL,
+    "problemId" TEXT NOT NULL,
     "code" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "status" TEXT NOT NULL DEFAULT 'processing',
@@ -46,7 +46,7 @@ CREATE TABLE "Submission" (
 -- CreateTable
 CREATE TABLE "ProblemStatus" (
     "id" SERIAL NOT NULL,
-    "problemId" INTEGER NOT NULL,
+    "problemId" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'unsolved',
 
@@ -56,7 +56,7 @@ CREATE TABLE "ProblemStatus" (
 -- CreateTable
 CREATE TABLE "LanguageOnProblem" (
     "id" SERIAL NOT NULL,
-    "problemId" INTEGER NOT NULL,
+    "problemId" TEXT NOT NULL,
     "languageId" INTEGER NOT NULL,
     "boilerplateCode" TEXT NOT NULL,
 
@@ -65,7 +65,7 @@ CREATE TABLE "LanguageOnProblem" (
 
 -- CreateTable
 CREATE TABLE "_ProblemToUser" (
-    "A" INTEGER NOT NULL,
+    "A" TEXT NOT NULL,
     "B" TEXT NOT NULL,
 
     CONSTRAINT "_ProblemToUser_AB_pkey" PRIMARY KEY ("A","B")
