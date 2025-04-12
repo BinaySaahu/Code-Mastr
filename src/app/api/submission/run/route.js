@@ -4,6 +4,7 @@ import { generateClient } from "@/server/db";
 import { generateCppMain } from "../../boilerplate-generators/driver-generators/cpp";
 import { parser } from "../../boilerplate-generators/parser";
 import { run } from "node:test";
+import { Prisma } from "@prisma/client";
 
 const {
   S3Client,
@@ -14,15 +15,23 @@ const {
 
 export async function POST(request) {
   console.log("Request Recieved to run a problem");
-  const { code, languageId, testcases, problemId } = await request.json();
+  const { code, languageId, testcases, problemId, timeLimit, memoryLimit } =
+    await request.json();
   //langauge, code(function), testCases, problemID
-  //   1 -> In queue
-  //   2 -> processing
-  //   3 -> Accepted
-  //   4 -> wrong answer
-  //   5 -> TLE
-  //   6 -> compilation error
-  //   11 -> runtime error
+  // 1	In Queue
+  // 2	Processing
+  // 3	Accepted
+  // 4	Wrong Answer
+  // 5	Time Limit Exceeded
+  // 6	Compilation Error
+  // 7	Runtime Error (SIGSEGV)
+  // 8	Runtime Error (SIGXFSZ)
+  // 9	Runtime Error (SIGFPE)
+  // 10	Runtime Error (SIGABRT)
+  // 11	Runtime Error (NZEC)
+  // 12	Runtime Error (Other)
+  // 13	Internal Error
+  // 14	Exec Format Error
 
   try {
     // step 1: create complete code
@@ -66,10 +75,12 @@ export async function POST(request) {
         source_code: fullCode,
         stdin: testCase.input,
         expected_output: testCase.output,
+        cpu_time_limit: timeLimit,
+        memory_limit: memoryLimit,
       };
       submissions.push(submission);
     }
-    console.log(submissions)
+    console.log(submissions);
     const submittedRes = await fetch(
       "https://judge0-ce.p.rapidapi.com/submissions/batch?base64_encoded=false",
       {
@@ -82,6 +93,10 @@ export async function POST(request) {
       }
     );
     const submittedResJson = await submittedRes.json();
+    const tokenToTestCase = {};
+    submittedResJson.map((s, idx) => {
+      tokenToTestCase[s.token] = testcases[idx];
+    });
 
     // step 3: submission request(GET)
     const data = await requestPolling(submittedResJson);
@@ -106,12 +121,22 @@ export async function POST(request) {
 
     let returnObj = [];
     let wrongAns = false;
+    let tle = false;
     for (const sub of data) {
       if (sub.status.id === 4) {
         returnObj.push({ status: "wrong", output: sub.stdout });
         wrongAns = true;
-      } else {
+      } else if (sub.status.id === 3) {
         returnObj.push({ status: "acc", output: sub.stdout });
+      } else if (sub.status.id === 5) {
+        return NextResponse.json({
+          text: "Time limit exceeded",
+          data:{
+            input: tokenToTestCase[sub.token].input,
+            output: tokenToTestCase[sub.token].output
+          },
+          code: 5
+        })
       }
     }
 

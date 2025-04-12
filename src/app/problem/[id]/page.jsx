@@ -54,12 +54,18 @@ const page = ({ params }) => {
   };
 
   const getTestCases = () => {
-    if (runStatus === 1 || runStatus === 2 || runStatus === 9) {
+    if (
+      runStatus === 1 ||
+      runStatus === 2 ||
+      runStatus === 9 ||
+      runStatus === 5
+    ) {
       return (
         <TestCases
           testCases={problemData?.testcases}
           output={output}
           passedTestCases={passedTestCases}
+          runStatus={runStatus}
         />
       );
     } else if (runStatus === 3) {
@@ -248,6 +254,58 @@ const page = ({ params }) => {
             </div>
           </div>
         );
+      case 5:
+        return (
+          <div className="flex flex-col w-full gap-5">
+            <div className="flex items-center gap-5 w-full">
+              <h1 className="text-red-500 text-2xl font-bold">
+                Time Limit Exceeded
+              </h1>
+              <p className="text-gray-500 text-base">
+                Testcases: {submissionOutput.data.passedTestCasesCnt}/
+                {submissionOutput.data.totalTestCases}
+              </p>
+            </div>
+            {/* <h1 className="text-red-500 text-2xl font-bold">Compilation Error</h1> */}
+            {/* <CompileTimeError err={submissionOutput.text} hideHeading={true} /> */}
+            <div className="flex">
+              <div className="w-full">
+                <p className="font-bold text-lg">Input</p>
+                <div
+                  className="w-full p-5 rounded-xl bg-[#343333] flex items-center text-white mt-2"
+                  dangerouslySetInnerHTML={{
+                    __html: submissionOutput.data.failedTestCase.input,
+                  }}
+                />
+                <p className="font-bold text-lg mt-3">Expected Output</p>
+                <div
+                  className="w-full p-5 rounded-xl bg-[#343333] flex items-center text-white mt-2"
+                  dangerouslySetInnerHTML={{
+                    __html: submissionOutput.data.failedTestCase.expectedOutput,
+                  }}
+                />
+              </div>
+            </div>
+            <div className="rounded-xl flex flex-col gap-3">
+              <p className="text-xl font-bold">Code</p>
+              <Editor
+                height="425px"
+                // className="w-full"
+                // language="cpp" // Adjust the language based on your code
+                value={submissionOutput.data.source_code}
+                theme="vs-dark"
+                options={{
+                  readOnly: true, // Make it read-only
+                  minimap: { enabled: false }, // Optional: Disable minimap for better UI
+                  wordWrap: "on", // Wrap long lines of code
+                  scrollBeyondLastLine: false, // Disable scrolling beyond last line
+                  wrappingIndent: "same", // Maintain consistent wrapping indent
+                  // automaticLayout: true, // Adjust layout on window resize
+                }}
+              />
+            </div>
+          </div>
+        );
 
       default:
         break;
@@ -261,6 +319,8 @@ const page = ({ params }) => {
       code: code,
       languageId: language.languageId,
       testcases: problemData.testcases,
+      memoryLimit: problemData.memoryLimit,
+      timeLimit: problemData.timeLimit,
     };
     console.log(obj);
     try {
@@ -286,6 +346,7 @@ const page = ({ params }) => {
     }
   };
   const submitProblem = async () => {
+    setTab("problem");
     setSubmitStatus(0);
     try {
       const obj = {
@@ -293,6 +354,8 @@ const page = ({ params }) => {
         code: code,
         languageId: language.languageId,
         userId: USER.userId,
+        memoryLimit: problemData.memoryLimit,
+        timeLimit: problemData.timeLimit,
       };
       const response = await fetch("/api/submission/submit", {
         method: "POST",
@@ -335,7 +398,7 @@ const page = ({ params }) => {
               <TabsList className="mb-2">
                 <TabsTrigger value="problem">Problem</TabsTrigger>
                 <TabsTrigger value="submission">Submissions</TabsTrigger>
-                {(submitStatus !== 0 && submitStatus !== 9) && (
+                {submitStatus !== 0 && submitStatus !== 9 && (
                   <TabsTrigger value="submission_status">
                     Submission status
                   </TabsTrigger>
@@ -344,13 +407,13 @@ const page = ({ params }) => {
               <TabsContent value="problem" className="w-full h-full pb-5">
                 <ProblemStatement
                   problemData={problemData}
-                  setProblemData = {setProblemData}
+                  setProblemData={setProblemData}
                 />
               </TabsContent>
               <TabsContent value="submission" className="w-full h-full pb-5">
                 <Submissions problemId={problemData.id} />
               </TabsContent>
-              {(submitStatus !== 0 && submitStatus !== 9) && (
+              {submitStatus !== 0 && submitStatus !== 9 && (
                 <TabsContent value="submission_status" className="w-full pb-5">
                   {getSubmissionStatusHTML()}
                 </TabsContent>
