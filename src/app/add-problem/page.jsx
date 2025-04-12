@@ -166,12 +166,12 @@ const page = () => {
                 <div className="flex items-center gap-3 w-full">
                   <Input
                     type="text"
-                    placeholder="Memory limit (in seconds)"
+                    placeholder="Memory limit (in KB)"
                     {...register("mem_limit")}
                   />
                   <Input
                     type="text"
-                    placeholder="Time limit (in KB)"
+                    placeholder="Time limit (in seconds)"
                     {...register("time_limit")}
                   />
 

@@ -15,16 +15,23 @@ const {
 
 export async function POST(request) {
   console.log("Request Recieved to run a problem");
-  const { code, languageId, userId, problemId } = await request.json();
+  const { code, languageId, userId, problemId, timeLimit, memoryLimit } = await request.json();
   const prisma = await generateClient();
   //langauge, code(function), testCases, problemID
-  //   1 -> In queue
-  //   2 -> processing
-  //   3 -> Accepted
-  //   4 -> wrong answer
-  //   5 -> TLE
-  //   6 -> compilation error
-  //   11 -> runtime error
+  // 1	In Queue
+  // 2	Processing
+  // 3	Accepted
+  // 4	Wrong Answer
+  // 5	Time Limit Exceeded
+  // 6	Compilation Error
+  // 7	Runtime Error (SIGSEGV)
+  // 8	Runtime Error (SIGXFSZ)
+  // 9	Runtime Error (SIGFPE)
+  // 10	Runtime Error (SIGABRT)
+  // 11	Runtime Error (NZEC)
+  // 12	Runtime Error (Other)
+  // 13	Internal Error
+  // 14	Exec Format Error
 
   try {
     // step 1: create complete code
@@ -104,6 +111,8 @@ export async function POST(request) {
         source_code: fullCode,
         stdin: testCase.input,
         expected_output: testCase.output,
+        cpu_time_limit: timeLimit,
+        memory_limit: memoryLimit,
       };
       submissions.push(submission);
     }
@@ -180,6 +189,8 @@ export async function POST(request) {
           submissionStatus = "COMPILATION ERR";
         } else if (sub.status.id === 4) {
           submissionStatus = "WRONG ANS";
+        } else if (sub.status.id === 5) {
+          submissionStatus = "TLE";
         }
       }
 
@@ -267,9 +278,22 @@ export async function POST(request) {
           output: sub.stdout,
         });
         wrongAns = true;
-      } else {
+      } else if(sub.status.id === 3) {
         
         returnObj.push({ status: "acc", output: sub.stdout });
+      }else if(sub.status.id === 5){
+        failedTestCase.input = tokenToTestCase[sub.token].input;
+        failedTestCase.expectedOutput = tokenToTestCase[sub.token].output;
+        return NextResponse.json({
+          text: "Time limit exceeded",
+          data:{
+            failedTestCase: failedTestCase,
+            passedTestCasesCnt: passedTestCasesCnt,
+            totalTestCases: testcases.length,
+            source_code: code
+          },
+          code: 5
+        })
       }
     }
 
