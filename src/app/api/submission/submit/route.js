@@ -4,6 +4,7 @@ import { generateClient } from "@/server/db";
 import { generateCppMain } from "../../boilerplate-generators/driver-generators/cpp";
 import { parser } from "../../boilerplate-generators/parser";
 import { run } from "node:test";
+import { generatePyMain } from "../../boilerplate-generators/driver-generators/python";
 
 const {
   S3Client,
@@ -15,7 +16,8 @@ const {
 
 export async function POST(request) {
   console.log("Request Recieved to run a problem");
-  const { code, languageId, userId, problemId, timeLimit, memoryLimit } = await request.json();
+  let { code, languageId, userId, problemId, timeLimit, memoryLimit } =
+    await request.json();
   const prisma = await generateClient();
   //langauge, code(function), testCases, problemID
   // 1	In Queue
@@ -101,6 +103,12 @@ export async function POST(request) {
     if (languageId == 105) {
       const cppMain = generateCppMain(inputs, functionName, output);
       fullCode = `#include<bits/stdc++.h>\nusing namespace std;\n${code}\n${cppMain}`;
+    }
+    if (languageId === 100) {
+      memoryLimit = 65536;
+      const pyMain = generatePyMain(inputs, functionName);
+      fullCode = `${code}\n${pyMain}`;
+      console.log(fullCode);
     }
 
     // step 2: subbmission request(POST)
@@ -238,7 +246,7 @@ export async function POST(request) {
     if (data[0].status.id === 6) {
       return NextResponse.json({
         text: data[0].compile_output,
-        data: {source_code: code},
+        data: { source_code: code },
         code: 4,
       });
     }
@@ -249,8 +257,7 @@ export async function POST(request) {
     for (const sub of data) {
       if (sub.status.id === 3) {
         passedTestCasesCnt += 1;
-      }
-      else if (sub.status.id === 11 && runTimeError === "") {
+      } else if (sub.status.id === 11 && runTimeError === "") {
         runTimeError = sub.stderr;
         failedTestCase.input = tokenToTestCase[sub.token].input;
         failedTestCase.expectedOutput = tokenToTestCase[sub.token].output;
@@ -263,7 +270,7 @@ export async function POST(request) {
           passedTestCasesCnt: passedTestCasesCnt,
           failedTestCase: failedTestCase,
           totalTestCases: testcases.length,
-          source_code: code
+          source_code: code,
         },
         code: 3,
       });
@@ -278,22 +285,21 @@ export async function POST(request) {
           output: sub.stdout,
         });
         wrongAns = true;
-      } else if(sub.status.id === 3) {
-        
+      } else if (sub.status.id === 3) {
         returnObj.push({ status: "acc", output: sub.stdout });
-      }else if(sub.status.id === 5){
+      } else if (sub.status.id === 5) {
         failedTestCase.input = tokenToTestCase[sub.token].input;
         failedTestCase.expectedOutput = tokenToTestCase[sub.token].output;
         return NextResponse.json({
           text: "Time limit exceeded",
-          data:{
+          data: {
             failedTestCase: failedTestCase,
             passedTestCasesCnt: passedTestCasesCnt,
             totalTestCases: testcases.length,
-            source_code: code
+            source_code: code,
           },
-          code: 5
-        })
+          code: 5,
+        });
       }
     }
 
@@ -315,7 +321,7 @@ export async function POST(request) {
         failedTestCase: failedTestCase,
         passedTestCasesCnt: passedTestCasesCnt,
         totalTestCases: testcases.length,
-        source_code: code
+        source_code: code,
       },
       code: wrongAns ? 2 : 1,
     });

@@ -5,6 +5,7 @@ import { generateCppMain } from "../../boilerplate-generators/driver-generators/
 import { parser } from "../../boilerplate-generators/parser";
 import { run } from "node:test";
 import { Prisma } from "@prisma/client";
+import { generatePyMain } from "../../boilerplate-generators/driver-generators/python";
 
 const {
   S3Client,
@@ -15,7 +16,7 @@ const {
 
 export async function POST(request) {
   console.log("Request Recieved to run a problem");
-  const { code, languageId, testcases, problemId, timeLimit, memoryLimit } =
+  let { code, languageId, testcases, problemId, timeLimit, memoryLimit } =
     await request.json();
   //langauge, code(function), testCases, problemID
   // 1	In Queue
@@ -65,6 +66,12 @@ export async function POST(request) {
     if (languageId == 105) {
       const cppMain = generateCppMain(inputs, functionName, output);
       fullCode = `#include<bits/stdc++.h>\nusing namespace std;\n${code}\n${cppMain}`;
+    }
+    if(languageId === 100){
+      memoryLimit = 65536;
+      const pyMain = generatePyMain(inputs, functionName);
+      fullCode = `${code}\n${pyMain}`
+      console.log(fullCode)
     }
 
     // step 2: subbmission request(POST)
