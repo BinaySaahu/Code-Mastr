@@ -80,17 +80,17 @@ const ProblemList = () => {
 
   let pages = Math.ceil(problemList.length / 10);
   return (
-    <div>
+    <div className="h-full">
       {!pageProblems? (
         <ProblemListSkeleton/>
       ) : (
-        <>
+        <div className="flex flex-col justify-between h-full">
           <Table>
             {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
             <TableHeader>
               <TableRow className = "md:text-base text-xs">
-                <TableHead className="md:w-[100px] md:block hidden">Sl.No</TableHead>
-                <TableHead className="md:w-[50px]">Status</TableHead>
+                <TableHead className="md:block hidden">Sl.No</TableHead>
+                <TableHead className="">Status</TableHead>
                 <TableHead>Problem</TableHead>
                 <TableHead>Difficulty</TableHead>
                 <TableHead>Topics</TableHead>
@@ -187,7 +187,7 @@ const ProblemList = () => {
               </PaginationContent>
             </Pagination>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
