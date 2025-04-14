@@ -17,7 +17,7 @@ import { getSession, signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
@@ -32,6 +32,7 @@ function classNames(...classes) {
 
 export default function NavBar() {
   const [path, setPath] = useState("/");
+  const pathName = usePathname()
   // const { status } = useSession();
   const router = useRouter();
 
@@ -116,11 +117,13 @@ export default function NavBar() {
           </div>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex shrink-0 items-center">
-              <img
-                alt="Your Company"
-                src="/logo-transparent.png"
-                className="h-8 w-auto"
-              />
+              <Link href={'/'}>
+                <img
+                  alt="Your Company"
+                  src="/logo-transparent.png"
+                  className="h-8 w-auto"
+                />
+              </Link>
             </div>
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
@@ -130,7 +133,7 @@ export default function NavBar() {
                     href={item.href}
                     aria-current={item.href === path ? "page" : undefined}
                     className={classNames(
-                      item.href === path
+                      item.href === pathName
                         ? "bg-[#181818] text-white"
                         : "text-gray-300 hover:bg-[#2d2d2d]-gray-700 hover:text-white",
                       "rounded-md px-3 py-2 text-sm font-medium"
@@ -144,7 +147,7 @@ export default function NavBar() {
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             {USER.admin && (
-              <a href="/add-problem">
+              <a href="/add-problem" className="md:block hidden">
                 <Button variant="default" onClick={() => signOut()}>
                   Add problem
                 </Button>
@@ -216,7 +219,7 @@ export default function NavBar() {
       </div>
 
       <DisclosurePanel className="sm:hidden">
-        <div className="space-y-1 px-2 pb-3 pt-2">
+        <div className="space-y-1 px-2 pb-3 pt-2 h-">
           {navigation.map((item) => (
             <DisclosureButton
               key={item.name}
@@ -224,7 +227,7 @@ export default function NavBar() {
               href={item.href}
               aria-current={item.current ? "page" : undefined}
               className={classNames(
-                item.current
+                pathName === item.href
                   ? "bg-[#000000] text-white"
                   : "text-gray-300 hover:bg-[#2d2d2d]-gray-700 hover:text-white",
                 "block rounded-md px-3 py-2 text-base font-medium"
@@ -233,6 +236,19 @@ export default function NavBar() {
               {item.name}
             </DisclosureButton>
           ))}
+          {USER.admin && (<DisclosureButton
+              as="a"
+              href='/add-problem'
+              className={classNames(
+                pathName === '/add-problem'
+                  ? "bg-[#000000] text-white"
+                  : "text-gray-300 hover:bg-[#2d2d2d]-gray-700 hover:text-white",
+                "block rounded-md px-3 py-2 text-base font-medium"
+              )}
+            >
+             Add problem
+            </DisclosureButton>
+            )}
         </div>
       </DisclosurePanel>
     </Disclosure>
