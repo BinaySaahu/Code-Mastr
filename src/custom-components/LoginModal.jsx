@@ -207,6 +207,7 @@ const LoginModal = () => {
                 {error}
               </p>
             )}
+            <Link href={'/accounts/reset-password'} className="text-blue-600 text-xs">Forgot Password?</Link>
             <p className="text-xs">
               Create an Account?{" "}
               <Link href={"/accounts/register"} className="text-blue-600">
