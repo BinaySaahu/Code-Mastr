@@ -88,9 +88,9 @@ const ProblemList = () => {
           <Table>
             {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-[100px]">Sl.No</TableHead>
-                <TableHead className="w-[50px]">Status</TableHead>
+              <TableRow className = "md:text-base text-xs">
+                <TableHead className="md:w-[100px] md:block hidden">Sl.No</TableHead>
+                <TableHead className="md:w-[50px]">Status</TableHead>
                 <TableHead>Problem</TableHead>
                 <TableHead>Difficulty</TableHead>
                 <TableHead>Topics</TableHead>
@@ -100,8 +100,8 @@ const ProblemList = () => {
             <TableBody>
               {pageProblems?.map((problem, idx) => {
                 return (
-                  <TableRow key={idx}>
-                    <TableCell className="font-medium">{idx+1}</TableCell>
+                  <TableRow key={idx} className = "md:text-base text-xs">
+                    <TableCell className="font-medium md:block hidden">{idx+1}</TableCell>
                     <TableCell className="font-medium">
                       {getStatus(problem)}
                     </TableCell>
@@ -134,7 +134,7 @@ const ProblemList = () => {
           </Table>
           <div className="mt-5">
             <Pagination>
-              <PaginationContent className>
+              <PaginationContent className = "md:text-base text-xs">
                 <PaginationItem
                   className={`${pageNum === 1 && "cursor-not-allowed"}`}
                 >

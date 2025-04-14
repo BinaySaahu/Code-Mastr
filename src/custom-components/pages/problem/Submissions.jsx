@@ -55,6 +55,7 @@ const Submissions = ({ problemId }) => {
         throw new Error
       }
       const json = await response.json();
+      json.submissions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       setSubmissions(json.submissions)
     } catch (error) {
       console.error(error);
@@ -91,7 +92,7 @@ const Submissions = ({ problemId }) => {
                 <TableRow key={idx}>
                   <TableCell className="font-medium">{idx + 1}</TableCell>
                   <TableCell className="font-medium">
-                    {submission.createdAt}
+                    {new Date(submission.createdAt).toDateString()}
                   </TableCell>
                   <TableCell
                     className={`font-medium ${getStatusColor(

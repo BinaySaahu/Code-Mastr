@@ -14,6 +14,7 @@ import ProblemStatement from "@/custom-components/pages/problem/ProblemStatement
 import { useSelector } from "react-redux";
 import ProblemListSkeleton from "@/custom-components/ProblemListSkeleton";
 import { Editor } from "@monaco-editor/react";
+import SubmissionStatusSkeleton from "@/custom-components/SubmissionStatusSkeleton";
 
 const page = ({ params }) => {
   const [problemData, setProblemData] = useState();
@@ -346,8 +347,8 @@ const page = ({ params }) => {
     }
   };
   const submitProblem = async () => {
-    setTab("problem");
     setSubmitStatus(0);
+    setTab("submission_status");
     try {
       const obj = {
         problemId: problemData.id,
@@ -376,15 +377,16 @@ const page = ({ params }) => {
       console.log(error);
       toast(error.message);
       setSubmitStatus(9);
+      setTab("problem")
     }
   };
   useEffect(() => {
     loadProblem();
   }, [USER]);
   return (
-    <div className="w-full px-5 h-screen flex">
+    <div className="w-full md:px-5 px-2 h-screen flex">
       {/* problem statement */}
-      <div className="w-1/2 h-screen overflow-y-scroll overflow-x-hidden py-5 pt-20 px-2">
+      <div className="md:w-1/2 w-full h-screen overflow-y-scroll overflow-x-hidden py-5 pt-20 px-2">
         {!problemData ? (
           <ProblemStatementSkeleton />
         ) : (
@@ -398,7 +400,7 @@ const page = ({ params }) => {
               <TabsList className="mb-2">
                 <TabsTrigger value="problem">Problem</TabsTrigger>
                 <TabsTrigger value="submission">Submissions</TabsTrigger>
-                {submitStatus !== 0 && submitStatus !== 9 && (
+                {submitStatus !== 9 && (
                   <TabsTrigger value="submission_status">
                     Submission status
                   </TabsTrigger>
@@ -413,9 +415,9 @@ const page = ({ params }) => {
               <TabsContent value="submission" className="w-full h-full pb-5">
                 <Submissions problemId={problemData.id} />
               </TabsContent>
-              {submitStatus !== 0 && submitStatus !== 9 && (
+              {submitStatus !== 9 && (
                 <TabsContent value="submission_status" className="w-full pb-5">
-                  {getSubmissionStatusHTML()}
+                  {submitStatus === 0 ? <SubmissionStatusSkeleton/>:getSubmissionStatusHTML()}
                 </TabsContent>
               )}
             </Tabs>
@@ -423,7 +425,7 @@ const page = ({ params }) => {
         )}
       </div>
       {/* code editor */}
-      <div className="w-1/2 h-screen overflow-y-scroll py-5 pt-20">
+      <div className="w-1/2 h-screen overflow-y-scroll py-5 pt-20 md:block hidden">
         {!problemData ? (
           <CodeEditorSkeleton />
         ) : (

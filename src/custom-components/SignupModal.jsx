@@ -118,7 +118,7 @@ const SignupModal = () => {
   }, [session]);
   return (
     <div className="h-screen w-full flex items-center justify-center">
-      <Card className="px-4 w-[23%]">
+      <Card className="px-4 xl:w-[23%] lg:w-[40%] sm:w-[75%]">
         <CardHeader>
           <CardTitle>Register</CardTitle>
           <CardDescription>Please create your account</CardDescription>
@@ -194,12 +194,12 @@ const SignupModal = () => {
           </CardContent>
           <CardFooter className="flex flex-col items-center justify-center gap-4">
             {loading ? (
-              <Button disabled className="w-full">
+              <Button disabled className="w-full py-4">
                 <Loader2 className="animate-spin" />
                 Signing up
               </Button>
             ) : (
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full py-4">
                 Sign up
               </Button>
             )}
