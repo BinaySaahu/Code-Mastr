@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateClient } from "@/server/db";
+import { getRedisClient } from "@/server/redisClient";
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -19,6 +20,9 @@ export async function POST(request) {
         const token = jwt.sign({ id: user.email }, process.env.SECRET_KEY, {
           expiresIn: "5h",
         });
+
+        const redis = await getRedisClient();
+        await redis.set(user.email, JSON.stringify(user), { EX: 3600 });
 
         return NextResponse.json({
           text: "User Logged in successfully",
@@ -46,6 +50,10 @@ export async function POST(request) {
           );
 
           console.log("Created user->", createdUser);
+          const redis = await getRedisClient();
+          await redis.set(createdUser.email, JSON.stringify(createdUser), {
+            EX: 3600,
+          });
 
           return NextResponse.json(
             {

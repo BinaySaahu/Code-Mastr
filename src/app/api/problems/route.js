@@ -5,8 +5,9 @@ export async function GET(request) {
     const prisma = generateClient();
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
-    console.log("Recieved a request");
+    console.log("Recieved a request fot all problems");
     const problems = await prisma.problem.findMany();
+    console.log("Retrived problems")
     let allProblems = [];
     if(userId){
       for (const problem of problems) {
@@ -43,7 +44,8 @@ export async function GET(request) {
 }
 
 const getSolvedProblem = async (prisma, problem, userId) => {
-  const solved = prisma.problemStatus.findUnique({
+  console.log("Getting solved status...")
+  const solved = await prisma.problemStatus.findUnique({
     where: {
       userId_problemId: {
         userId: userId,
@@ -51,5 +53,6 @@ const getSolvedProblem = async (prisma, problem, userId) => {
       },
     },
   });
+  console.log("Returning solved status....")
   return solved;
 };

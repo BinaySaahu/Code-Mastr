@@ -78,6 +78,9 @@ export default function NavBar() {
   //   console.log(session);
   // };
   const logout = () => {
+    // const redis = await getRedisClient();
+    // let user = JSON.parse(localStorage.getItem('user'))
+    // await redis.del(user.email)
     signOut();
     localStorage.removeItem("user");
     localStorage.removeItem("token");
