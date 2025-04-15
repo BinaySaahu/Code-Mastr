@@ -25,6 +25,8 @@ CREATE TABLE "Problem" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
+    "memoryLimit" INTEGER NOT NULL,
+    "timeLimit" DOUBLE PRECISION NOT NULL,
     "difficulty" TEXT NOT NULL,
     "topics" TEXT[],
 

@@ -131,8 +131,9 @@ export async function POST(request) {
         const { inputs, functionName, output } = parser(fileContent);
 
         const cppFunction = generateCppFunction(inputs, functionName, output);
+
         // const jsFunction = generateJSFunction(inputs, functionName);
-        // const pyFunction = generatePyFunction(inputs, functionName);
+        const pyFunction = generatePyFunction(inputs, functionName);
 
         // const jsFunctionAdd = await tx.LanguageOnProblem.create({
         //   data: {
@@ -148,13 +149,13 @@ export async function POST(request) {
             boilerplateCode: cppFunction,
           },
         });
-        // const pyFunctionAdd = await tx.LanguageOnProblem.create({
-        //   data: {
-        //     problemId,
-        //     languageId: 100,
-        //     boilerplateCode: pyFunction,
-        //   },
-        // });
+        const pyFunctionAdd = await tx.LanguageOnProblem.create({
+          data: {
+            problemId,
+            languageId: 100,
+            boilerplateCode: pyFunction,
+          },
+        });
         return true;
       });
       if (result) {

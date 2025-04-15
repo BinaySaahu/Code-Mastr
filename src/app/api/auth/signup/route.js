@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { generateClient } from "@/server/db";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getRedisClient } from "@/server/redisClient";
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 export async function POST(request) {
@@ -54,6 +55,8 @@ export async function POST(request) {
               where: { id: createdUser.id },
             })
             .solved();
+          const redis = await getRedisClient();
+          await redis.set(createdUser.email, JSON.stringify(createdUser), { EX: 3600 });
           createdUser = { ...createdUser, solved: solved };
           console.log("Created user->", createdUser);
           console.log("Cookie->", session);

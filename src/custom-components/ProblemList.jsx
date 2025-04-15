@@ -23,27 +23,25 @@ import {
 } from "@/components/ui/pagination";
 import Link from "next/link";
 import { useSelector } from "react-redux";
-import { MdOutlineDone } from "react-icons/md";
+import { MdErrorOutline, MdOutlineDone } from "react-icons/md";
 import { FaCircleNotch } from "react-icons/fa6";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProblemListSkeleton from "./ProblemListSkeleton";
 
 const ProblemList = () => {
-  const [problemList, setProblemList] = useState([]);
+  const [fetchErr, setFetchErr] = useState(false)
+  const [problemList, setProblemList] = useState();
   const [pageNum, setPageNum] = useState(1);
   const [pageProblems, setPageProblems] = useState();
-  const [loading, setLoading] = useState(true);
   const USER = useSelector((state) => state.user);
 
   const handlePagination = (page) => {
-    setLoading(true)
     setPageNum(page);
     let start = page * 10 - 10;
-    let end = Math.min(start + 10, problemList.length);
+    let end = Math.min(start + 10, problemList?.length);
     console.log(pageNum + "start->" + start + "end->" + end);
-    setPageProblems(problemList.slice(start, end));
-    setLoading(false);
+    setPageProblems(problemList?.slice(start, end));
   };
   const loadProblems = async () => {
     try {
@@ -56,10 +54,11 @@ const ProblemList = () => {
       const json = await response.json();
       setProblemList(json);
       handlePagination(1);
-      setLoading(false);
+      // setLoading(false);
     } catch (error) {
-      console.error(error.message);
-      setLoading(false);
+      setPageProblems([])
+      console.log(error.message);
+      setFetchErr(true)
     }
   };
 
@@ -78,13 +77,18 @@ const ProblemList = () => {
     handlePagination(1);
   }, [problemList]);
 
-  let pages = Math.ceil(problemList.length / 10);
+  let pages = Math.ceil(problemList?.length / 10);
   return (
-    <div className="h-full">
-      {!pageProblems? (
+    <div className="h-full flex items-center justify-center w-full">
+      {
+        
+      (!pageProblems? (
         <ProblemListSkeleton/>
       ) : (
-        <div className="flex flex-col justify-between h-full">
+        fetchErr ? 
+        <p className="text-red-500 text-base flex items-center gap-1"><MdErrorOutline color="red"/>Error in fetching the problems</p>
+        :
+        <div className="flex flex-col justify-between h-full w-full">
           <Table>
             {/* <TableCaption>A list of your recent invoices.</TableCaption> */}
             <TableHeader>
@@ -97,6 +101,7 @@ const ProblemList = () => {
                 {/* <TableHead className="text-right"></TableHead> */}
               </TableRow>
             </TableHeader>
+            
             <TableBody>
               {pageProblems?.map((problem, idx) => {
                 return (
@@ -132,6 +137,7 @@ const ProblemList = () => {
               })}
             </TableBody>
           </Table>
+
           <div className="mt-5">
             <Pagination>
               <PaginationContent className = "md:text-base text-xs">
@@ -188,7 +194,8 @@ const ProblemList = () => {
             </Pagination>
           </div>
         </div>
-      )}
+      ))
+      }
     </div>
   );
 };
