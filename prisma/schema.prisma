@@ -18,7 +18,8 @@ model User {
   email         String          @unique
   name          String?
   password      String
-  solved        Problem[]
+  image         String          @default("https://image.com")
+  description   String          @default("Add your description")
   admin         Boolean         @default(false)
   submission    Submission[]
   problemStatus ProblemStatus[]
@@ -34,14 +35,13 @@ model Language {
 }
 
 model Problem {
-  id            String                 @id @default(uuid())
-  name          String
-  description   String
-  memoryLimit   Int
-  timeLimit     Float
-  difficulty    String
-  topics        String[]
-  User          User[]
+  id          String    @id @default(uuid())
+  name        String
+  description String
+  memoryLimit Int
+  timeLimit   Float
+  difficulty  String
+  topics      Topics[]   // many-to-many
   languages     LanguageOnProblem[]
   Submission    Submission[]
   ProblemStatus ProblemStatus[]
@@ -84,4 +84,10 @@ model LanguageOnProblem {
   language Language @relation(fields: [languageId], references: [languageId], onDelete: Cascade)
 
   @@unique([problemId, languageId]) // Ensure each language can be linked to a problem only once
+}
+
+model Topics {
+  id        Int    @id @default(autoincrement())
+  topic     String
+  problems Problem[]
 }

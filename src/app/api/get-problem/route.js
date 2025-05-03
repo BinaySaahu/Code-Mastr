@@ -16,16 +16,19 @@ export async function GET(request) {
     const prisma = generateClient();
     console.log("Recieved a request");
     if (!problemId) {
-      return new Response.json(
+      return NextResponse.json(
         { text: "Problem ID is required" },
         { status: 400 }
       );
     }
     let problem = await prisma.problem.findUnique({
       where: { id: problemId },
+      include:{
+        topics: true
+      }
     });
     if (!problem) {
-      return new Response.json({ text: "Problem not found" }, { status: 404 });
+      return NextResponse.json({ text: "Problem not found" }, { status: 404 });
     }
     const languages = await prisma.problem
       .findUnique({
@@ -107,7 +110,7 @@ export async function GET(request) {
     return NextResponse.json({ problem: problem }, { status: 200 });
   } catch (error) {
     console.log(error);
-    return new Response.json(
+    return NextResponse.json(
       { text: "Internal server error" },
       { status: 500 }
     );

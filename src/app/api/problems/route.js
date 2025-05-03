@@ -6,7 +6,11 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get("userId");
     console.log("Recieved a request fot all problems");
-    const problems = await prisma.problem.findMany();
+    const problems = await prisma.problem.findMany({
+      include: {
+        topics: true, // include related topics
+      },
+    });
     console.log("Retrived problems")
     let allProblems = [];
     if(userId){

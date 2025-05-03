@@ -1,10 +1,10 @@
 const { createClient } = require('redis');
 
-let client;
+
 
 export async function getRedisClient() {
-  if (!client) {
-    client = createClient({
+  if (!global.redis) {
+    const client = createClient({
         username: process.env.REDIS_USERNAME,
         password: process.env.REDIS_PASSWORD,
         socket: {
@@ -17,7 +17,9 @@ export async function getRedisClient() {
 
     await client.connect();
     console.log('✅ Connected to Redis Cloud');
+    global.redis = client;
+    return client;
+  }else{
+    return global.redis;
   }
-
-  return client;
 }

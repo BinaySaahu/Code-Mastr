@@ -383,6 +383,12 @@ const page = ({ params }) => {
   useEffect(() => {
     loadProblem();
   }, [USER]);
+  useEffect(()=>{
+    if(problemData){
+      document.title = `Problem - ${problemData.name}`
+    }
+
+  },[problemData])
   return (
     <div className="w-full md:px-5 px-2 h-screen flex">
       {/* problem statement */}

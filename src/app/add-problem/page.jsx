@@ -1,6 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
+
 import {
   Card,
   CardContent,
@@ -9,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
 import {
   Select,
   SelectContent,
@@ -17,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import RichTextEditor from "@/custom-components/rich-text-editor/RichTextEditor";
 import { Button } from "@/components/ui/button";
@@ -31,33 +33,14 @@ import { useSelector } from "react-redux";
 import LoggedOutOverlay from "@/custom-components/LoggedOutOverlay";
 
 const page = () => {
-  const TOPICS = [
-    "DP",
-    "HashMap",
-    "Sliding window",
-    "Two pointers",
-    "Greedy",
-    "Array",
-    "String",
-    "Math",
-    "Bit manipulation",
-    "Breadth first search(bfs)",
-    "Depth first search(dfs)",
-    "Recursion",
-    "Backtracking",
-    "Stack",
-    "Queue",
-    "Priority Queue(Heap)",
-    "Tree",
-    "Binary search tree",
-  ];
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
   const [desc, setDesc] = useState("");
-  const [topics, setTopics] = useState([TOPICS[0]]);
+  const [topics, setTopics] = useState();
+  const [topic, setTopic] = useState();
   const [difficulty, setDifficulty] = useState();
   const [solutions, setSolutions] = useState();
   const [tests, setTests] = useState();
@@ -73,7 +56,7 @@ const page = () => {
 
   const submitProblem = async (data) => {
     setLoading(true);
-    data = { ...data, desc: desc, topics: topics, difficulty: difficulty };
+    data = { ...data, desc: desc, topics: topic, difficulty: difficulty };
     const formData = new FormData();
     formData.append("data", JSON.stringify(data));
     formData.append("solutions", solutions); // If solutions is a file
@@ -115,10 +98,38 @@ const page = () => {
       setLoading(false);
     }
   };
+
+  const loadTopics = async()=>{
+    try{
+      const res = await fetch('/api/get-topics',{
+        method:'GET'
+      })
+      const json = await res.json();
+      console.log(json)
+      if(!res.ok){
+        throw new Error("Error in fetching the topics")
+      }
+      const allTopicsNames = [];
+      json.topics.forEach((topic)=>{
+        allTopicsNames.push(topic.topic)
+      })
+      setTopic([json.topics[0]])
+      setTopics(json.topics)
+
+    }catch(error){
+      console.log(error.message)
+    }
+
+  }
   console.log(desc);
+
+  useEffect(()=>{
+    loadTopics()
+
+  },[])
   return (
     <>
-      {USER.userId === "" ? (
+      {USER.userId === "" || !topics || !topic ? (
         <div className={`relative w-full flex items-center justify-center pt-20 h-screen`}>
           <Loader2 className="animate-spin"/>Loading...
         </div>
@@ -159,9 +170,9 @@ const page = () => {
                   </SelectContent>
                 </Select>
                 <FancyMultiSelect
-                  selected={topics}
-                  setSelected={setTopics}
-                  TOPICS={TOPICS}
+                  selected={topic}
+                  setSelected={setTopic}
+                  TOPICS={topics}
                 />
                 <div className="flex items-center gap-3 w-full">
                   <Input

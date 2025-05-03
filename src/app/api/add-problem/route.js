@@ -53,7 +53,6 @@ export async function POST(request) {
     const problemData = {
       name: data.name,
       description: data.desc,
-      topics: data.topics,
       difficulty: data.difficulty,
       memoryLimit: Number(data.mem_limit),
       timeLimit: Number(data.time_limit),
@@ -77,7 +76,12 @@ export async function POST(request) {
     if (client) {
       const result = await prisma.$transaction(async (tx) => {
         let createdProblem = await tx.problem.create({
-          data: problemData,
+          data: {
+            ...problemData,
+            topics: {
+              connect: data.topics.map((topic) => ({ id: topic.id })), // connect to multiple topics
+            },
+          },
         });
         const problemId = createdProblem.id;
 
