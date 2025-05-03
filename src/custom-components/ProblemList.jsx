@@ -121,7 +121,7 @@ const ProblemList = () => {
                         {problem.topics.map((t, index) => {
                           return (
                             <Badge variant="outline" key={index}>
-                              {t}
+                              {t.topic}
                             </Badge>
                           );
                         })}

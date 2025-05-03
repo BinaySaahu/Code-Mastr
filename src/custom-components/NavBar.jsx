@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
@@ -32,7 +33,7 @@ function classNames(...classes) {
 
 export default function NavBar() {
   const [path, setPath] = useState("/");
-  const pathName = usePathname()
+  const pathName = usePathname();
   // const { status } = useSession();
   const router = useRouter();
 
@@ -59,7 +60,7 @@ export default function NavBar() {
       setUserData(json);
     } catch (error) {
       console.log(error);
-      alert(error.message);
+      toast("Session expired please Login again!!!")
     }
   };
 
@@ -120,7 +121,7 @@ export default function NavBar() {
           </div>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex shrink-0 items-center">
-              <Link href={'/'}>
+              <Link href={"/"}>
                 <img
                   alt="Your Company"
                   src="/logo-transparent.png"
@@ -130,32 +131,41 @@ export default function NavBar() {
             </div>
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
-                {navigation.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    aria-current={item.href === path ? "page" : undefined}
-                    className={classNames(
-                      item.href === pathName
-                        ? "bg-[#181818] text-white"
-                        : "text-gray-300 hover:bg-[#2d2d2d]-gray-700 hover:text-white",
-                      "rounded-md px-3 py-2 text-sm font-medium"
-                    )}
-                  >
-                    {item.name}
-                  </a>
-                ))}
+                {navigation.map((item) =>
+                  
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      aria-current={item.href === path ? "page" : undefined}
+                      className={classNames(
+                        item.href === pathName
+                          ? "bg-[#181818] text-white"
+                          : "text-gray-300 hover:bg-[#2d2d2d]-gray-700 hover:text-white",
+                        "rounded-md px-3 py-2 text-sm font-medium"
+                      )}
+                    >
+                      {item.name}
+                    </Link>
+                )}
+                {
+                  (USER.admin === true) && (
+                    <Link
+                      
+                      href={'/add-problem'}
+                      // aria-current={item.href === path ? "page" : undefined}
+                      className={classNames(
+                        pathName === '/add-problem'
+                          ? "bg-[#181818] text-white"
+                          : "text-gray-300 hover:bg-[#2d2d2d]-gray-700 hover:text-white",
+                        "rounded-md px-3 py-2 text-sm font-medium"
+                      )}
+                    >Add problem</Link>
+                  )
+                }
               </div>
             </div>
           </div>
           <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            {USER.admin && (
-              <a href="/add-problem" className="md:block hidden">
-                <Button variant="default" onClick={() => signOut()}>
-                  Add problem
-                </Button>
-              </a>
-            )}
             {USER.email ? (
               <Menu as="div" className="relative ml-3">
                 <div>
@@ -177,15 +187,15 @@ export default function NavBar() {
                   transition
                   className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
                 >
-                  {/* <MenuItem>
-                    <a
-                      href="#"
+                   <MenuItem>
+                    <Link
+                      href={`/dashboard/${USER.userId}`}
                       className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
                     >
                       Your Profile
-                    </a>
+                    </Link>
                   </MenuItem>
-                  <MenuItem>
+                  {/*<MenuItem>
                     <a
                       href="#"
                       className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
@@ -239,19 +249,20 @@ export default function NavBar() {
               {item.name}
             </DisclosureButton>
           ))}
-          {USER.admin && (<DisclosureButton
+          {USER.admin && (
+            <DisclosureButton
               as="a"
-              href='/add-problem'
+              href="/add-problem"
               className={classNames(
-                pathName === '/add-problem'
+                pathName === "/add-problem"
                   ? "bg-[#000000] text-white"
                   : "text-gray-300 hover:bg-[#2d2d2d]-gray-700 hover:text-white",
                 "block rounded-md px-3 py-2 text-base font-medium"
               )}
             >
-             Add problem
+              Add problem
             </DisclosureButton>
-            )}
+          )}
         </div>
       </DisclosurePanel>
     </Disclosure>

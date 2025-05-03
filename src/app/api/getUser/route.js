@@ -30,7 +30,7 @@ export async function GET(request) {
 
   }catch(error){
     console.log(error)
-    return NextResponse.json({text: 'Redis error'}, {status: 500})
+    // return NextResponse.json({text: 'Redis error'}, {status: 500})
   }
   console.log("User id: ",token)
   console.log("Decoded token: ",decodedToken)

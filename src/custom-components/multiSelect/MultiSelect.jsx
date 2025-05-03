@@ -17,10 +17,11 @@ export default function FancyMultiSelect({selected, setSelected, TOPICS}) {
 //   const [selected, setSelected] = useState();
   const [inputValue, setInputValue] = useState("");
 
-  console.log(selected)
+  console.log("Selected->",selected)
+  console.log("TOPICS->", TOPICS)
 
   const handleUnselect = useCallback((framework) => {
-    setSelected((prev) => prev.filter((s) => s !== framework));
+    setSelected((prev) => prev.filter((s) => s.topic !== framework.topic));
   }, []);
 
   const handleKeyDown = useCallback((e) => {
@@ -38,16 +39,16 @@ export default function FancyMultiSelect({selected, setSelected, TOPICS}) {
   }, []);
 
   const selectables = TOPICS.filter(
-    (framework) => !selected.some((s) => s === framework)
+    (framework) => !selected.some((s) => s.topic === framework.topic)
   );
 
   return (
     <Command onKeyDown={handleKeyDown} className="overflow-visible bg-transparent">
       <div className="group rounded-md border border-input px-3 py-2 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
         <div className="flex flex-wrap gap-1">
-          {selected.map((framework) => (
-            <Badge key={framework} variant="secondary">
-              {framework}
+          {selected.map((framework, idx) => (
+            <Badge key={idx} variant="secondary">
+              {framework.topic}
               <button
                 className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 onMouseDown={(e) => e.preventDefault()}
@@ -73,9 +74,9 @@ export default function FancyMultiSelect({selected, setSelected, TOPICS}) {
           <CommandList>
             <div className="absolute top-0 z-10 w-full rounded-md border bg-popover text-popover-foreground shadow-md animate-in">
               <CommandGroup className="h-full overflow-auto">
-                {selectables.map((framework) => (
+                {selectables.map((framework, idx) => (
                   <CommandItem
-                    key={framework}
+                    key={idx}
                     onMouseDown={(e) => e.preventDefault()}
                     onSelect={() => {
                       setInputValue("");
@@ -83,7 +84,7 @@ export default function FancyMultiSelect({selected, setSelected, TOPICS}) {
                     }}
                     className="cursor-pointer"
                   >
-                    {framework}
+                    {framework.topic}
                   </CommandItem>
                 ))}
               </CommandGroup>

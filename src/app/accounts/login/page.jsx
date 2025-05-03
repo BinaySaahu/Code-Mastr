@@ -1,9 +1,13 @@
 "use client"
 import isNotAuth from '@/custom-components/utils/isNotAuth'
 import LoginModal from '@/custom-components/LoginModal'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 const page = () => {
+  useEffect(()=>{
+    document.title = 'Login'
+
+  },[])
   return (
     <div>
         <LoginModal/>

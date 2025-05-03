@@ -68,7 +68,7 @@ const ProblemStatement = ({ problemData, setProblemData}) => {
             {problemData?.topics.map((topic, idx) => {
               return (
                 <Badge variant="outline" key={idx}>
-                  {topic}
+                  {topic.topic}
                 </Badge>
               );
             })}

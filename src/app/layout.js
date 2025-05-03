@@ -12,6 +12,9 @@ export default function RootLayout({ children }) {
     <SessionProvider>
       <Provider store={store}>
         <html lang="en">
+          <head>
+            <title>Code mastr</title>
+          </head>
           <body className={`dark`}>
             <NavBar />
             {children}
