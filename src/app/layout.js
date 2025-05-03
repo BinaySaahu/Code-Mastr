@@ -15,7 +15,7 @@ export default function RootLayout({ children }) {
           <head>
             <title>Code mastr</title>
           </head>
-          <body className={`dark`}>
+          <body className={`dark vsc-initialized`}>
             <NavBar />
             {children}
             <Toaster/>
