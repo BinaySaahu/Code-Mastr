@@ -60,6 +60,8 @@ export default function NavBar() {
       setUserData(json);
     } catch (error) {
       console.log(error);
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
       toast("Session expired please Login again!!!")
     }
   };
