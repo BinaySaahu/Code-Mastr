@@ -5,9 +5,7 @@ import ProfileSkeleton from "@/custom-components/ProfileSkeleton";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 const page = ({ params }) => {
-  const USER = useSelector((state) => state.user);
   const [userData, setUserData] = useState();
   const loadProfile = async () => {
     const par = await params;
@@ -30,10 +28,10 @@ const page = ({ params }) => {
     loadProfile();
   }, []);
   useEffect(() => {
-    if (USER.name) {
-      document.title = `Dashboard - ${USER?.name || "Loading..."}`;
+    if (typeof window !== 'undefined' && userData) {
+      document.title = `Dashboard - ${userData?.name || "Loading..."}`;
     }
-  }, [USER]);
+  }, [userData]);
   return (
     <>
       {!userData ? (
