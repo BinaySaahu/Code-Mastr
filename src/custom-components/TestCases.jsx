@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const TestCases = ({ testCases, output, passedTestCases, runStatus }) => {
   const [tab, setTab] = useState(0);
@@ -21,6 +21,10 @@ const TestCases = ({ testCases, output, passedTestCases, runStatus }) => {
         break;
     }
   };
+  useEffect(()=>{
+    console.log("Testcases->", testCases)
+
+  },[])
   return (
     <div className="py-5">
       {output && getStatus(output)}
@@ -31,7 +35,7 @@ const TestCases = ({ testCases, output, passedTestCases, runStatus }) => {
             <p className="font-bold text-lg">Input</p>
             <div
               className="w-full p-5 rounded-xl bg-[#343333] flex items-center text-white mt-2"
-              dangerouslySetInnerHTML={{ __html: passedTestCases.input.replace(
+              dangerouslySetInnerHTML={{ __html: passedTestCases.input.replaceAll(
                 "\n",
                 "<br>"
               ) }}
@@ -39,7 +43,7 @@ const TestCases = ({ testCases, output, passedTestCases, runStatus }) => {
             <p className="font-bold text-lg mt-3">Expected Output</p>
             <div
               className="w-full p-5 rounded-xl bg-[#343333] flex items-center text-white mt-2"
-              dangerouslySetInnerHTML={{ __html: passedTestCases.output.replace(
+              dangerouslySetInnerHTML={{ __html: passedTestCases.output.replaceAll(
                 "\n",
                 "<br>"
               ) }}
@@ -71,8 +75,8 @@ const TestCases = ({ testCases, output, passedTestCases, runStatus }) => {
             })}
           </div>
           {testCases.map((testCase, index) => {
-            const inp = testCase.input.replace("\n", "<br>");
-            const out = testCase.output.replace("\n", "<br>");
+            const inp = testCase.input.replaceAll("\n", "<br>");
+            const out = testCase.output.replaceAll("\n", "<br>");
             return (
               <div
                 key={index}
@@ -95,7 +99,7 @@ const TestCases = ({ testCases, output, passedTestCases, runStatus }) => {
                       <div
                         className="w-full p-5 rounded-xl bg-[#343333] flex items-center text-white mt-2"
                         dangerouslySetInnerHTML={{
-                          __html: passedTestCases[index].output.replace(
+                          __html: passedTestCases[index].output.replaceAll(
                             "\n",
                             "<br>"
                           ),
