@@ -128,14 +128,14 @@ const page = ({ params }) => {
                 <div
                   className="w-full p-5 rounded-xl bg-[#343333] flex items-center text-white mt-2"
                   dangerouslySetInnerHTML={{
-                    __html: submissionOutput.data.failedTestCase.input,
+                    __html: submissionOutput.data.failedTestCase.input.replaceAll("\n", "<br>"),
                   }}
                 />
                 <p className="font-bold text-lg mt-3">Expected Output</p>
                 <div
                   className="w-full p-5 rounded-xl bg-[#343333] flex items-center text-white mt-2"
                   dangerouslySetInnerHTML={{
-                    __html: submissionOutput.data.failedTestCase.expectedOutput,
+                    __html: submissionOutput.data.failedTestCase.expectedOutput.replaceAll("\n", "<br>"),
                   }}
                 />
 
@@ -143,7 +143,7 @@ const page = ({ params }) => {
                 <div
                   className="w-full p-5 rounded-xl bg-[#343333] flex items-center text-white mt-2"
                   dangerouslySetInnerHTML={{
-                    __html: submissionOutput.data.failedTestCase.output,
+                    __html: submissionOutput.data.failedTestCase.output.replaceAll("\n", "<br>"),
                   }}
                 />
               </div>
@@ -185,14 +185,14 @@ const page = ({ params }) => {
                 <div
                   className="w-full p-5 rounded-xl bg-[#343333] flex items-center text-white mt-2"
                   dangerouslySetInnerHTML={{
-                    __html: submissionOutput.data.failedTestCase.input,
+                    __html: submissionOutput.data.failedTestCase.input.replaceAll("\n", "<br>"),
                   }}
                 />
                 <p className="font-bold text-lg mt-3">Expected Output</p>
                 <div
                   className="w-full p-5 rounded-xl bg-[#343333] flex items-center text-white mt-2"
                   dangerouslySetInnerHTML={{
-                    __html: submissionOutput.data.failedTestCase.expectedOutput,
+                    __html: submissionOutput.data.failedTestCase.expectedOutput.replaceAll("\n", "<br>"),
                   }}
                 />
 
@@ -275,14 +275,14 @@ const page = ({ params }) => {
                 <div
                   className="w-full p-5 rounded-xl bg-[#343333] flex items-center text-white mt-2"
                   dangerouslySetInnerHTML={{
-                    __html: submissionOutput.data.failedTestCase.input,
+                    __html: submissionOutput.data.failedTestCase.input.replaceAll("\n", "<br>"),
                   }}
                 />
                 <p className="font-bold text-lg mt-3">Expected Output</p>
                 <div
                   className="w-full p-5 rounded-xl bg-[#343333] flex items-center text-white mt-2"
                   dangerouslySetInnerHTML={{
-                    __html: submissionOutput.data.failedTestCase.expectedOutput,
+                    __html: submissionOutput.data.failedTestCase.expectedOutput.replaceAll("\n", "<br>"),
                   }}
                 />
               </div>
