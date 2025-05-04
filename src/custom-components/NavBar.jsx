@@ -180,7 +180,8 @@ export default function NavBar() {
                       className="size-8 rounded-full"
                     /> */}
                     <Avatar>
-                      <AvatarImage src="https://github.com/shadcn.png" />
+                      <AvatarImage src={USER.image}/>
+                      {/* <AvatarImage src="https://github.com/shadcn.png" /> */}
                       <AvatarFallback>{getInitials(USER.name)}</AvatarFallback>
                     </Avatar>
                   </MenuButton>

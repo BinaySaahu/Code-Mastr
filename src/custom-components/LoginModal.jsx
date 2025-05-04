@@ -83,6 +83,7 @@ const LoginModal = () => {
       const userDataObj = {
         name: session.user.name,
         email: session.user.email,
+        image: session.user.image,
         password: "1234",
       };
       const response = await fetch("/api/auth/google-auth", {

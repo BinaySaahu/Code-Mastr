@@ -3,6 +3,7 @@ import { generateClient } from "@/server/db";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getRedisClient } from "@/server/redisClient";
+const gravatar = require('gravatar');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 export async function POST(request) {
@@ -25,10 +26,12 @@ export async function POST(request) {
         );
       } else {
         const hashedPassword = await bcrypt.hash(password, 10);
+        const imageURL = gravatar.url(email, {protocol: 'https', s: '100'});
         const userData = {
           email: email,
           name: name,
           password: hashedPassword,
+          image: imageURL
         };
         const sessionData = JSON.stringify(userData);
 

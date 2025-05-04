@@ -19,7 +19,7 @@ model User {
   name          String?
   password      String
   image         String          @default("https://image.com")
-  description   String          @default("Add your description")
+  description   String?         
   admin         Boolean         @default(false)
   submission    Submission[]
   problemStatus ProblemStatus[]
