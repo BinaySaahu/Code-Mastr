@@ -53,14 +53,14 @@ export async function POST(request) {
             expires: Date.now() + 60 * 60 * 24,
             secure: true,
           });
-          const solved = await prisma.user
-            .findUnique({
-              where: { id: createdUser.id },
-            })
-            .solved();
+          // const solved = await prisma.user
+          //   .findUnique({
+          //     where: { id: createdUser.id },
+          //   })
+          //   .solved();
           const redis = await getRedisClient();
           await redis.set(createdUser.email, JSON.stringify(createdUser), { EX: 3600 });
-          createdUser = { ...createdUser, solved: solved };
+          // createdUser = { ...createdUser, solved: solved };
           console.log("Created user->", createdUser);
           console.log("Cookie->", session);
           return NextResponse.json(
