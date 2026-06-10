@@ -4,8 +4,11 @@ import { cookies } from "next/headers";
 import { getRedisClient } from "@/server/redisClient";
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-
+//joi y npm package
 export async function POST(request) {
+  // request validation
+  // email and password validation
+
   const { email, password } = await request.json();
   const prisma = await generateClient();
 

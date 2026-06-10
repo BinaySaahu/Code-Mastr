@@ -17,8 +17,9 @@ const page = ({ params }) => {
       if (!res.ok) {
         throw new Error("Error in fetching the profile data");
       }
-      console.log(profileData);
+      console.log("User Data: ", profileData);
       setUserData(profileData.user);
+      console.log(userData);
     } catch (error) {
       console.log(error.message);
     }
@@ -28,7 +29,7 @@ const page = ({ params }) => {
     loadProfile();
   }, []);
   useEffect(() => {
-    if (typeof window !== 'undefined' && userData) {
+    if (typeof window !== "undefined" && userData) {
       document.title = `Dashboard - ${userData?.name || "Loading..."}`;
     }
   }, [userData]);
@@ -41,13 +42,15 @@ const page = ({ params }) => {
           <div className="pt-20 pb-5 flex lg:flex-row flex-col items-start lg:h-screen overflow-y-hidden gap-3">
             <div className="lg:w-[25%] w-full h-full bg-white/[10%] p-3 flex flex-col gap-1.5 rounded-xl">
               <div className="flex items-start gap-2">
-                <Image
-                  src="/logo-transparent.png"
-                  height={100}
-                  width={100}
-                  className="rounded-md"
-                  alt="Profile image"
-                />
+                {userData?.image ? (
+                  <Image
+                    src={userData.image}
+                    width={100}
+                    height={100}
+                    alt="Profile image"
+                    className="rounded-md"
+                  />
+                ) : null}
                 <div className="flex flex-col ">
                   <p
                     className="text-base wrap-anywhere"
@@ -87,7 +90,7 @@ const page = ({ params }) => {
                 <div className="bg-white/[10%] p-3 rounded-md w-full h-full flex items-center">
                   <div className="w-full flex justify-end">
                     <div className="relative rounded-full h-56 w-56">
-                      <DoughNout userData = {userData}/>
+                      <DoughNout userData={userData} />
                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center z-[-10]">
                         <span>
                           Solved {userData.totalProblemsSolved}/
@@ -106,7 +109,9 @@ const page = ({ params }) => {
                         </p>
                       </div>
                       <div className="bg-white/[20%] p-3 rounded-md flex flex-col items-center text-sm w-full">
-                        <span className="text-yellow-500 font-bold">Medium</span>
+                        <span className="text-yellow-500 font-bold">
+                          Medium
+                        </span>
                         <p>
                           {userData.medium.solved} / {userData.medium.total}
                         </p>
@@ -117,7 +122,6 @@ const page = ({ params }) => {
                           {userData.hard.solved} / {userData.hard.total}
                         </p>
                       </div>
-
                     </div>
                   </div>
                 </div>

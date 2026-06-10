@@ -44,7 +44,7 @@ export default function NavBar() {
   const loadUser = async () => {
     try {
       const response = await fetch(
-        `/api/getUser/?token=${localStorage.getItem("token")}`
+        `/api/getUser/?token=${localStorage.getItem("token")}`,
       );
       const json = await response.json();
       console.log(response.status);
@@ -62,7 +62,7 @@ export default function NavBar() {
       console.log(error);
       localStorage.removeItem("user");
       localStorage.removeItem("token");
-      toast("Session expired please Login again!!!")
+      toast("Session expired please Login again!!!");
     }
   };
 
@@ -133,37 +133,35 @@ export default function NavBar() {
             </div>
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
-                {navigation.map((item) =>
-                  
-                    <Link
-                      key={item.name}
-                      href={item.href}
-                      aria-current={item.href === path ? "page" : undefined}
-                      className={classNames(
-                        item.href === pathName
-                          ? "bg-[#181818] text-white"
-                          : "text-gray-300 hover:bg-[#2d2d2d]-gray-700 hover:text-white",
-                        "rounded-md px-3 py-2 text-sm font-medium"
-                      )}
-                    >
-                      {item.name}
-                    </Link>
+                {navigation.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    aria-current={item.href === path ? "page" : undefined}
+                    className={classNames(
+                      item.href === pathName
+                        ? "bg-[#181818] text-white"
+                        : "text-gray-300 hover:bg-[#2d2d2d]-gray-700 hover:text-white",
+                      "rounded-md px-3 py-2 text-sm font-medium",
+                    )}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+                {USER.admin === true && (
+                  <Link
+                    href={"/add-problem"}
+                    // aria-current={item.href === path ? "page" : undefined}
+                    className={classNames(
+                      pathName === "/add-problem"
+                        ? "bg-[#181818] text-white"
+                        : "text-gray-300 hover:bg-[#2d2d2d]-gray-700 hover:text-white",
+                      "rounded-md px-3 py-2 text-sm font-medium",
+                    )}
+                  >
+                    Add problem
+                  </Link>
                 )}
-                {
-                  (USER.admin === true) && (
-                    <Link
-                      
-                      href={'/add-problem'}
-                      // aria-current={item.href === path ? "page" : undefined}
-                      className={classNames(
-                        pathName === '/add-problem'
-                          ? "bg-[#181818] text-white"
-                          : "text-gray-300 hover:bg-[#2d2d2d]-gray-700 hover:text-white",
-                        "rounded-md px-3 py-2 text-sm font-medium"
-                      )}
-                    >Add problem</Link>
-                  )
-                }
               </div>
             </div>
           </div>
@@ -180,7 +178,7 @@ export default function NavBar() {
                       className="size-8 rounded-full"
                     /> */}
                     <Avatar>
-                      <AvatarImage src="https://github.com/shadcn.png" />
+                      <AvatarImage src={userData?.user?.image} alt={userData?.user?.name} />
                       <AvatarFallback>{getInitials(USER.name)}</AvatarFallback>
                     </Avatar>
                   </MenuButton>
@@ -189,7 +187,7 @@ export default function NavBar() {
                   transition
                   className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
                 >
-                   <MenuItem>
+                  <MenuItem>
                     <Link
                       href={`/dashboard/${USER.userId}`}
                       className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
@@ -245,7 +243,7 @@ export default function NavBar() {
                 pathName === item.href
                   ? "bg-[#000000] text-white"
                   : "text-gray-300 hover:bg-[#2d2d2d]-gray-700 hover:text-white",
-                "block rounded-md px-3 py-2 text-base font-medium"
+                "block rounded-md px-3 py-2 text-base font-medium",
               )}
             >
               {item.name}
@@ -259,7 +257,7 @@ export default function NavBar() {
                 pathName === "/add-problem"
                   ? "bg-[#000000] text-white"
                   : "text-gray-300 hover:bg-[#2d2d2d]-gray-700 hover:text-white",
-                "block rounded-md px-3 py-2 text-base font-medium"
+                "block rounded-md px-3 py-2 text-base font-medium",
               )}
             >
               Add problem

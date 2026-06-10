@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
-import { Link } from 'lucide-react'
+import Link from 'next/link';
+
 import React from 'react'
 import { FaLock } from "react-icons/fa";
 
@@ -8,7 +9,7 @@ const LoggedOutOverlay = ({text}) => {
     <div className='z-[1000] absolute w-full h-full bg-black/[70%] flex flex-col items-center justify-center gap-3'>
         <p className='text-center text-xl' dangerouslySetInnerHTML={{__html: text}}/>
         <FaLock size={25}/>
-      <a href='/accounts/login'><Button variant = "default">Login/Signup</Button></a>
+      <Link href='/accounts/login'><Button variant = "default">Login/Signup</Button></Link>
     </div>
   )
 }
