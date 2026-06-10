@@ -31,8 +31,9 @@ const page = ({ params }) => {
   }, []);
   useEffect(() => {
     if (typeof window !== "undefined" && userData) {
-    if (typeof window !== "undefined" && userData) {
-      document.title = `Dashboard - ${userData?.name || "Loading..."}`;
+      if (typeof window !== "undefined" && userData) {
+        document.title = `Dashboard - ${userData?.name || "Loading..."}`;
+      }
     }
   }, [userData]);
   return (
