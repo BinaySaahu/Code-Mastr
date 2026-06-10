@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 export async function POST(request) {
-  const { email, password, name } = await request.json();
+  const { email, password, name, image } = await request.json();
   const prisma = await generateClient();
 
   if (!email.includes("@") || !email.includes(".")) {
@@ -31,9 +31,11 @@ export async function POST(request) {
         });
       } else {
         const hashedPassword = await bcrypt.hash(password, 10);
+        
         const userData = {
           email: email,
           name: name,
+          image:image,
           password: hashedPassword,
         };
 

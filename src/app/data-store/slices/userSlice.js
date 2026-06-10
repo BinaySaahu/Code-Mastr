@@ -5,6 +5,8 @@ export const userSlice = createSlice({
   initialState: {
     userId: "",
     name: "",
+    image:"",
+    description:"",
     email: "",
     solved:[],
     admin:false,
@@ -14,6 +16,7 @@ export const userSlice = createSlice({
     addUser: (state,action) => {
       state.userId = action.payload.id
       state.name = action.payload.name;
+      state.image = action.payload.image;
       state.email = action.payload.email;
       state.solved = action.payload.solved;
       state.admin = action.payload.admin;

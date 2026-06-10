@@ -5,6 +5,7 @@ import ProfileSkeleton from "@/custom-components/ProfileSkeleton";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { MdErrorOutline } from "react-icons/md";
 const page = ({ params }) => {
   const [userData, setUserData] = useState();
   const loadProfile = async () => {
@@ -29,6 +30,7 @@ const page = ({ params }) => {
     loadProfile();
   }, []);
   useEffect(() => {
+    if (typeof window !== "undefined" && userData) {
     if (typeof window !== "undefined" && userData) {
       document.title = `Dashboard - ${userData?.name || "Loading..."}`;
     }
@@ -68,21 +70,28 @@ const page = ({ params }) => {
               </div>
               <p className="text-base">{userData.description}</p>
               <hr />
-              <div className="">
+              <div className="h-full">
                 <h3>Topics solved</h3>
-                <div className="grid grid-cols-3 gap-2">
-                  {userData.topicsSolved.map((ts, idx) => {
-                    return (
-                      <Badge
-                        key={idx}
-                        variant="outline"
-                        className="!bg-white/[20%] rounded-full text-sm font-normal flex justify-center"
-                      >
-                        {ts}
-                      </Badge>
-                    );
-                  })}
-                </div>
+                {userData.topicsSolved.length === 0 ? (
+                  <div className="flex justify-center items-center h-full gap-2">
+                    <MdErrorOutline />
+                    <p>Nothing to show here!!</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 gap-2">
+                    {userData.topicsSolved.map((ts, idx) => {
+                      return (
+                        <Badge
+                          key={idx}
+                          variant="outline"
+                          className="!bg-white/[20%] rounded-full text-sm font-normal flex justify-center"
+                        >
+                          {ts}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
             <div className="lg:w-[75%] w-full flex flex-col gap-2 h-full">
@@ -130,20 +139,29 @@ const page = ({ params }) => {
                 </div>
               </div>
               <div className="bg-white/[10%] rounded-md p-3 h-full overflow-y-scroll">
-                <h3 className="text-lg font-semibold my-2">Problems solved</h3>
-                <div className="flex flex-col items-center gap-2">
-                  {userData.solvedProblems.map((sp, idx) => {
-                    return (
-                      <Link
-                        key={idx}
-                        href={`/problem/${sp.id}`}
-                        className="p-5 rounded-md bg-white/[15%] w-full"
-                      >
-                        {sp.name}
-                      </Link>
-                    );
-                  })}
-                </div>
+                <h3 className="text-lg font-semibold my-2 text-left">
+                  Problems solved
+                </h3>
+                {userData.solvedProblems.length === 0 ? (
+                  <div className="flex justify-center items-center h-full gap-2">
+                    <MdErrorOutline />
+                    <p>No problems attemted yet</p>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-2 justify-center">
+                    {userData.solvedProblems.map((sp, idx) => {
+                      return (
+                        <Link
+                          key={idx}
+                          href={`/problem/${sp.id}`}
+                          className="p-5 rounded-md bg-white/[15%] w-full"
+                        >
+                          {sp.name}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           </div>
