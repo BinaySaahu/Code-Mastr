@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+PHASE_1_COMPLETE.md
+UI_ENHANCEMENT_ANALYSIS.md

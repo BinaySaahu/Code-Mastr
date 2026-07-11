@@ -187,8 +187,8 @@ export async function POST(request) {
     // step 3: submissin request(GET)
     const data = await requestPolling(submittedResJson);
 
+    let submissionStatus = "ACCEPTED";
     try {
-      let submissionStatus = "ACCEPTED";
       for (const sub of data) {
         if (sub.status.id === 11) {
           submissionStatus = "RUNTIME ERR";
@@ -243,7 +243,7 @@ export async function POST(request) {
       console.log(error);
     }
     // compilation error
-    if (data[0].status.id === 6) {
+    if (submissionStatus === "COMPILATION ERR") {
       return NextResponse.json({
         text: data[0].compile_output,
         data: { source_code: code },

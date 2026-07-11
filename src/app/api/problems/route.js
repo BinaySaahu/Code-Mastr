@@ -11,7 +11,7 @@ export async function GET(request) {
         topics: true, // include related topics
       },
     });
-    console.log("Retrived problems")
+    // console.log("Retrived problems")
     let allProblems = [];
     if(userId){
       for (const problem of problems) {
@@ -30,7 +30,7 @@ export async function GET(request) {
       allProblems = problems;
     }
 
-    console.log(allProblems);
+    // console.log(allProblems);
     // if(userId){
     //   const solvedProblems = await prisma.problem.findMany().ProblemStatus({
     //     where: {

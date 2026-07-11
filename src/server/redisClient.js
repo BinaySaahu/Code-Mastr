@@ -3,6 +3,7 @@ const { createClient } = require('redis');
 
 
 export async function getRedisClient() {
+  // return null;
   if (!global.redis) {
     const client = createClient({
         username: process.env.REDIS_USERNAME,

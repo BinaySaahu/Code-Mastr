@@ -3,6 +3,7 @@ import { generateClient } from "@/server/db";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { getRedisClient } from "@/server/redisClient";
+import { getDataFromRedis, addDataToRedis } from "@/server/redisUtils";
 const gravatar = require('gravatar');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -58,8 +59,12 @@ export async function POST(request) {
           //     where: { id: createdUser.id },
           //   })
           //   .solved();
-          const redis = await getRedisClient();
-          await redis.set(createdUser.email, JSON.stringify(createdUser), { EX: 3600 });
+          try{
+            const redis = await getRedisClient();
+            await addDataToRedis(createdUser.email, JSON.stringify(createdUser), 3600, redis);
+          }catch(err){
+            console.log("Redis error: ", err);
+          }
           // createdUser = { ...createdUser, solved: solved };
           console.log("Created user->", createdUser);
           console.log("Cookie->", session);

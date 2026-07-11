@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { generateClient } from "@/server/db";
 import { getRedisClient } from "@/server/redisClient";
+import { getDataFromRedis, addDataToRedis } from "@/server/redisUtils";
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -20,9 +21,12 @@ export async function POST(request) {
         const token = jwt.sign({ id: user.email }, process.env.SECRET_KEY, {
           expiresIn: "5h",
         });
-
-        const redis = await getRedisClient();
-        await redis.set(user.email, JSON.stringify(user), { EX: 3600 });
+        try {
+          const redis = await getRedisClient();
+          await addDataToRedis(user.email, JSON.stringify(user), 3600, redis);
+        } catch (err) {
+          console.log("Redis error: ", err);
+        }
 
         return NextResponse.json({
           text: "User Logged in successfully",
@@ -31,11 +35,11 @@ export async function POST(request) {
         });
       } else {
         const hashedPassword = await bcrypt.hash(password, 10);
-        
+
         const userData = {
           email: email,
           name: name,
-          image:image,
+          image: image,
           password: hashedPassword,
         };
 
@@ -48,14 +52,21 @@ export async function POST(request) {
             process.env.SECRET_KEY,
             {
               expiresIn: "5h",
-            }
+            },
           );
 
           console.log("Created user->", createdUser);
-          const redis = await getRedisClient();
-          await redis.set(createdUser.email, JSON.stringify(createdUser), {
-            EX: 3600,
-          });
+          try {
+            const redis = await getRedisClient();
+            await addDataToRedis(
+              createdUser.email,
+              JSON.stringify(createdUser),
+              3600,
+              redis,
+            );
+          } catch (err) {
+            console.log("Redis error: ", err);
+          }
 
           return NextResponse.json(
             {
@@ -63,14 +74,14 @@ export async function POST(request) {
               user: createdUser,
               token: token,
             },
-            { status: 200 }
+            { status: 200 },
           );
         } else {
           return NextResponse.json(
             {
               text: "Failed to create user",
             },
-            { status: 500 }
+            { status: 500 },
           );
         }
       }
@@ -79,13 +90,13 @@ export async function POST(request) {
         {
           text: "Some of the fields are missing",
         },
-        { status: 401 }
+        { status: 401 },
       );
     }
   } catch (error) {
     return NextResponse.json(
       { text: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
