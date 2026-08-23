@@ -14,7 +14,10 @@ export async function getRedisClient() {
         },
     });
 
-    client.on('error', (err) => console.error('Redis Client Error', err));
+    client.on('error', (err) => {
+      console.error('Redis Client Error', err);
+      throw err;
+    });
 
     await client.connect();
     console.log('✅ Connected to Redis Cloud');
