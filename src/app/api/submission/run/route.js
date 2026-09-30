@@ -45,7 +45,7 @@ export async function POST(request) {
     });
     const info = await client.send(
       new GetObjectCommand({
-        Bucket: "code-mstr",
+        Bucket: process.env.AWS_BUCKET_NAME,
         Key: `${problemId}/structure.md`,
       })
     );

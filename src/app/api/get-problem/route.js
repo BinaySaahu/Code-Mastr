@@ -76,14 +76,14 @@ export async function GET(request) {
     });
     let inputs = await client.send(
       new ListObjectsCommand({
-        Bucket: "code-mstr",
+        Bucket: process.env.AWS_BUCKET_NAME,
         Prefix: `${problemId}/testcases/testcases/inputs`,
         MaxKeys: 4,
       })
     );
     let outputs = await client.send(
       new ListObjectsCommand({
-        Bucket: "code-mstr",
+        Bucket: process.env.AWS_BUCKET_NAME,
         Prefix: `${problemId}/testcases/testcases/outputs`,
         MaxKeys: 4,
       })
@@ -119,7 +119,7 @@ export async function GET(request) {
 const getObjectFromBucket = async (client, key) => {
   const info = await client.send(
     new GetObjectCommand({
-      Bucket: "code-mstr",
+      Bucket: process.env.AWS_BUCKET_NAME,
       Key: key,
     })
   );

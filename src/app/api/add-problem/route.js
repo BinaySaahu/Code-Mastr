@@ -87,7 +87,7 @@ export async function POST(request) {
 
         await client.send(
           new PutObjectCommand({
-            Bucket: "code-mstr",
+            Bucket: process.env.AWS_BUCKET_NAME,
             Key: `${problemId}/structure.md`,
             Body: structure,
           })
@@ -97,7 +97,7 @@ export async function POST(request) {
           allTestCases.map(async (element) => {
             await client.send(
               new PutObjectCommand({
-                Bucket: "code-mstr",
+                Bucket: process.env.AWS_BUCKET_NAME,
                 Key: `${problemId}/testcases/${element.entryName}`,
                 Body: element.getData(),
               })
@@ -108,7 +108,7 @@ export async function POST(request) {
           allSolutions.map(async (element) => {
             await client.send(
               new PutObjectCommand({
-                Bucket: "code-mstr",
+                Bucket: process.env.AWS_BUCKET_NAME,
                 Key: `${problemId}/solutions/${element.entryName}`,
                 Body: element.getData(),
               })
@@ -117,7 +117,7 @@ export async function POST(request) {
         );
         const info = await client.send(
           new GetObjectCommand({
-            Bucket: "code-mstr",
+            Bucket: process.env.AWS_BUCKET_NAME,
             Key: `${problemId}/structure.md`,
           })
         );

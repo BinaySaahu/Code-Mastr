@@ -46,19 +46,19 @@ export async function POST(request) {
     });
     const info = await client.send(
       new GetObjectCommand({
-        Bucket: "code-mstr",
+        Bucket: process.env.AWS_BUCKET_NAME,
         Key: `${problemId}/structure.md`,
       })
     );
     let testcase_inputs = await client.send(
       new ListObjectsCommand({
-        Bucket: "code-mstr",
+        Bucket: process.env.AWS_BUCKET_NAME,
         Prefix: `${problemId}/testcases/testcases/inputs`,
       })
     );
     let testcase_outputs = await client.send(
       new ListObjectsCommand({
-        Bucket: "code-mstr",
+        Bucket: process.env.AWS_BUCKET_NAME,
         Prefix: `${problemId}/testcases/testcases/outputs`,
       })
     );
